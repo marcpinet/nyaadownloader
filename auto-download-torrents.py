@@ -141,7 +141,7 @@ while True:
                 # [...] Else, the program alerts you that no torrent have been found with the corresponding name.
                 else:
                     if i >= 10:
-                         print(f"No torrent found for the name: [{u}] {item[0]} - 0{i} [{quality[qualityChoice-1]}p].\nMaybe it still hasn't aired...\n")
+                         print(f"No torrent found for the name: [{u}] {item[0]} - {i} [{quality[qualityChoice-1]}p].\nMaybe it still hasn't aired...\n")
                     else:
                          print(f"No torrent found for the name: [{u}] {item[0]} - 0{i} [{quality[qualityChoice-1]}p].\nMaybe it still hasn't aired...\n")
             
