@@ -9,3 +9,10 @@ You specify the anime name, the episode where you want to start downloading, and
 
 Just click and have fun waiting (it's really fast).
 Every downloaded torrent will be stored in a dedicated folder in the same folder as the script.
+
+<h1> Requirements </h1>
+
+With the command pip install <library> you'll need to install the following ones :
+  
+  • NyaaPy
+  • win10toast
