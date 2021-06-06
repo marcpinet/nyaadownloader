@@ -187,7 +187,7 @@ while True:
                 continue   
 
         # This notifies you that every torrent from an anime has been fully downloaded
-        toaster = ToastNotifier()
+        toaster = win10toast.ToastNotifier()
         if answer == 1:
             toaster.show_toast("Nyaa Auto-download", f"The anime {item[0]} has been succesffuly downloaded!")
         else:
