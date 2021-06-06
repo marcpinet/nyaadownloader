@@ -5,7 +5,7 @@ My first scrapper! It is focused on making simplier to bulk download torrents fr
 <h1> How it Works </h1>
 Everything is written into the script as a comment. If you want to add a provider like Erai-Raws or SubsPlease etc., you'll need to edit the list in the script.
 
-You specify the anime name, the episode where you want to start downloading, and then the last episode.
+You specify the anime name, the episode where you want to start downloading, and then the last episode. You can also select the quality and download multiple anime at a time.
 
 Just click and have fun waiting (it's really fast).
 Every downloaded torrent will be stored in a dedicated folder in the same folder as the script.
