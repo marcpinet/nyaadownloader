@@ -61,7 +61,7 @@ while True:
                 print("Please, make sure to input a value between 1 and 1000.\n")
         tmp.append(begin)
 
-        print("\nUntil which episode?")
+        print("\nUp to which episode?")
         end = -1
 
         while begin > end:
