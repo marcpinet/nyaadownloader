@@ -1,13 +1,11 @@
-# Main imports
+# Imports (I did not use from ... import ... since PyAutoExe can't include them in the binaries (idk why))
 import NyaaPy
 import urllib.request
 import shutil
 import os
 import webbrowser
-
-# Misc Imports
-from time import sleep
-from win10toast import ToastNotifier
+import win10toast
+import time
 
 # Because I don't know how to do it else. A simple, but still good, while True.
 while True:
@@ -45,34 +43,40 @@ while True:
         os.system("cls")
         # Temporary list containing every informations needed for an anime.
         tmp = []
-        print("\nPlease, write the name of the anime you want to download:")
-        anime = input("> ")
+        print("\n\nPlease, write the name of the anime you want to download:")
+        
+        anime = ""
+        while len(anime) < 2:
+            anime = input("> ")
+            if len(anime) < 2:
+                print("Please, be sure to enter a valide title (not a blank character!)")
+        
         tmp.append(anime)
 
-        print("\nStarting from which episode?")
+        print("\n\nStarting from which episode?")
         begin = -1
 
         while begin not in range(1, 1000):
             try:
                 begin = int(input("> "))
             except ValueError:
-                print("Please, make sure to input an integer.\n")
+                print("Please, make sure to input an integer.")
                 continue
             if begin not in range(1, 1000) and int(begin) == begin:
-                print("Please, make sure to input a value between 1 and 1000.\n")
+                print("Please, make sure to input a value between 1 and 1000.")
         tmp.append(begin)
 
-        print("\nUp to which episode?")
+        print("\n\nUp to which episode?")
         end = -1
 
-        while begin > end:
+        while begin > end or end not in range(1, 1000):
             try:
                 end = int(input("> "))
             except ValueError:
-                print("Please, make sure to input an integer.\n")
+                print("Please, make sure to input an integer.")
                 continue
-            if begin > end and int(end) == end:
-                print("Please, make sure to input a value greater than or equal to the previous one.\n")
+            if begin > end or end not in range(1, 1000):
+                print("Please, make sure to input a value greater than or equal to the previous one and lower than 1000!")
         tmp.append(end)
 
         watchingAnimes.append(tmp)
@@ -84,17 +88,27 @@ while True:
         answer = 0
 
         while answer not in [1, 2]:
-            answer = int(input("> "))
+            try:
+                answer = int(input("> "))
+            except ValueError:
+                print("Please, make sure to input an integer.")
+                continue
             if answer not in [1, 2]:
-                print("Please, make sure to answer either 1 or 2.\n")
+                print("Please, make sure to answer either 1 or 2.")
             elif answer == 2:
                 stillWantsAnime = False
                 os.system("cls")
 
     # Choose the quality
+    print("\n\nChoose a quality (you need to unter the corresponding number)\n\n\t1 - 480p\n\t2 - 720p\n\t3 - 1080p\n")
     while qualityChoice not in [1, 2, 3]:
-        print("\nChoose a quality (you need to unter the corresponding number)\n\n\t1 - 480p\n\t2 - 720p\n\t3 - 1080p\n")
-        qualityChoice = int(input("> "))
+        try:
+            qualityChoice = int(input("> "))
+        except ValueError:
+            print("Please, make sure to input an integer.")
+            continue
+        if qualityChoice not in [1, 2, 3]:
+            print("Please, make sure to answer either 1 or 2.")
 
     os.system("cls")
 
@@ -104,9 +118,13 @@ while True:
     answer = 0
 
     while answer not in [1, 2]:
-        answer = int(input("> "))
+        try:
+            answer = int(input("> "))
+        except ValueError:
+            print("Please, make sure to input an integer.")
+            continue
         if answer not in [1, 2]:
-            print("Please, make sure to answer either 1 or 2.\n")
+            print("Please, make sure to answer either 1 or 2.")
 
     os.system("cls")
 
@@ -180,4 +198,4 @@ while True:
 
 os.system("cls")
 print("\nAll anime have been successfully downloaded.\nThe program will now close.")
-sleep(4)
+time.sleep(4)
