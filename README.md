@@ -14,6 +14,6 @@ Every downloaded torrent will be stored in a dedicated folder in the same folder
 
 With the command pip install <library> you'll need to install the following ones :
   
-  • NyaaPy
-  • win10toast
-  • requests
+  • NyaaPy<br>
+  • win10toast<br>
+  • requests<br>
