@@ -16,3 +16,4 @@ With the command pip install <library> you'll need to install the following ones
   
   • NyaaPy
   • win10toast
+  • requests
