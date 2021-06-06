@@ -3,6 +3,7 @@ import NyaaPy
 import urllib.request
 import shutil
 import os
+import webbrowser
 
 # Misc Imports
 from time import sleep
@@ -22,7 +23,7 @@ while True:
 
     # Main screen
     print(
-        "Welcome to my bulk downloader for Nyaa.si!\n\n"
+        "\nWelcome to my bulk downloader for Nyaa.si!\n\n"
         "\tNote: Make sure to write the title in \"Japanese\".\n"
         "\tFor instance, instead of My Hero Academia, write Boku no Hero Academia.\n\n"
         "\tSince uploaders often use the Japanese title, you won't be able to find your anime otherwise.\n"
@@ -44,7 +45,7 @@ while True:
         os.system("cls")
         # Temporary list containing every informations needed for an anime.
         tmp = []
-        print("Please, write the name of the anime you want to download:")
+        print("\nPlease, write the name of the anime you want to download:")
         anime = input("> ")
         tmp.append(anime)
 
@@ -75,7 +76,8 @@ while True:
         tmp.append(end)
 
         watchingAnimes.append(tmp)
-        print(f"I will download {anime} from episode {begin} to {end}.\n\n")
+        os.system("cls")
+        print(f"\nAlright, I will download {anime} from episode {begin} to {end}.\n\n")
 
         # From there, the user will decide wether he wants to download more animes or not.
         print("Do you want to download another anime? (1=Yes, 2=No)\n")
@@ -91,13 +93,22 @@ while True:
 
     # Choose the quality
     while qualityChoice not in [1, 2, 3]:
-        print("Choose a quality (you need to unter the corresponding number)\n\n\t1 - 480p\n\t2 - 720p\n\t3 - 1080p\n")
+        print("\nChoose a quality (you need to unter the corresponding number)\n\n\t1 - 480p\n\t2 - 720p\n\t3 - 1080p\n")
         qualityChoice = int(input("> "))
 
     os.system("cls")
 
     nbFound = len(watchingAnimes)
-    os.system("mkdir DownloadedTorrents")
+
+    print("\nFinally, download torrents or open magnets in client? (1=.torrent, 2=magnet)\n")
+    answer = 0
+
+    while answer not in [1, 2]:
+        answer = int(input("> "))
+        if answer not in [1, 2]:
+            print("Please, make sure to answer either 1 or 2.\n")
+
+    os.system("cls")
 
     # For each anime you're watching
     for item in watchingAnimes:
@@ -122,21 +133,30 @@ while True:
                     # We take the only two variables from the dictionary we are interested in (the result from the query stored in the variable foundTorrent)
                     downloadLink = foundTorrent[0]["download_url"]
                     torrentName = foundTorrent[0]["name"] + ".torrent"
+                    magnet = foundTorrent[0]["magnet"]
                     # We put this variable to True so the program will continue until there is a result
                     stillFoundTorrents = True
 
-                    # To be honest with you, this one is a copy/paste from StackOverflow since it was my first web scrapping program. But I can tell you that I now understand what it does.
-                    # If you want more details, just read: https://stackoverflow.com/questions/7243750/download-file-from-web-in-python-3 
-                    with urllib.request.urlopen(downloadLink) as response, open(torrentName, 'wb') as out_file:
-                        shutil.copyfileobj(response, out_file)
-                        print(f"Downloading: {torrentName}, please wait...")
-                    
-                    # We move the downloaded torrent to the dedicated folder.
-                    os.system(f"move \"{torrentName}\" \"DownloadedTorrents\\{torrentName}\"")
-                    print("\n")
+                    # If the user chose .torrent option
+                    if answer == 1:
+                        # To be honest with you, this one is a copy/paste from StackOverflow since it was my first web scrapping program. But I can tell you that I now understand what it does.
+                        # If you want more details, just read: https://stackoverflow.com/questions/7243750/download-file-from-web-in-python-3 
+                        os.system("mkdir DownloadedTorrents")
+                        with urllib.request.urlopen(downloadLink) as response, open(torrentName, 'wb') as out_file:
+                            shutil.copyfileobj(response, out_file)
+                            print(f"Downloading: {torrentName}, please wait...")
+                        
+                        # We move the downloaded torrent to the dedicated folder.
+                        os.system(f"move \"{torrentName}\" \"DownloadedTorrents\\{torrentName}\"")
+                        print("\n")
 
-                    # We don't wanna download the same episode from two different uploaders...
-                    break
+                        # We don't wanna download the same episode from two different uploaders...
+                        break
+                    
+                    # If the user chose magnet option
+                    else:
+                        webbrowser.open(magnet)
+                        break
             
                 # [...] Else, the program alerts you that no torrent have been found with the corresponding name.
                 else:
