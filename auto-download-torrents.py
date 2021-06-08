@@ -16,8 +16,8 @@ while True:
         "SubsPlease"
     ]
 
+    # Every quality available.
     quality = [480, 720, 1080]
-    qualityChoice = 0
 
     # Main screen
     print(
@@ -79,9 +79,22 @@ while True:
                 print("Please, make sure to input a value greater than or equal to the previous one and lower than 1000!")
         tmp.append(end)
 
+        qualityChoice = 0
+
+        print("\n\nChoose a quality (you need to unter the corresponding number)\n\n\t1 - 480p\n\t2 - 720p\n\t3 - 1080p\n")
+        while qualityChoice not in [1, 2, 3]:
+            try:
+                qualityChoice = int(input("> "))
+            except ValueError:
+                print("Please, make sure to input an integer.")
+                continue
+            if qualityChoice not in [1, 2, 3]:
+                print("Please, make sure to answer either 1, 2 or 3.")
+        tmp.append(qualityChoice)
+
         watchingAnimes.append(tmp)
         os.system("cls")
-        print(f"\nAlright, I will download {anime} from episode {begin} to {end}.\n\n")
+        print(f"\nAlright, I will download {anime} from episode {begin} to {end} in {quality[qualityChoice-1]}p.\n\n")
 
         # From there, the user will decide wether he wants to download more animes or not.
         print("Do you want to download another anime? (1=Yes, 2=No)\n")
@@ -98,17 +111,6 @@ while True:
             elif answer == 2:
                 stillWantsAnime = False
                 os.system("cls")
-
-    # Choose the quality
-    print("\n\nChoose a quality (you need to unter the corresponding number)\n\n\t1 - 480p\n\t2 - 720p\n\t3 - 1080p\n")
-    while qualityChoice not in [1, 2, 3]:
-        try:
-            qualityChoice = int(input("> "))
-        except ValueError:
-            print("Please, make sure to input an integer.")
-            continue
-        if qualityChoice not in [1, 2, 3]:
-            print("Please, make sure to answer either 1 or 2.")
 
     os.system("cls")
 
@@ -140,11 +142,11 @@ while True:
             for u in uploaders:
 
                 if i >= 10:
-                    foundTorrent = NyaaPy.Nyaa.search(keyword=f"[{u}] {item[0]} - {i} [{quality[qualityChoice-1]}p]", category=1, subcategory=2, filters=2)
-                    print(f"Checking: [{u}] {item[0]} - {i} [{quality[qualityChoice-1]}p]")
+                    foundTorrent = NyaaPy.Nyaa.search(keyword=f"[{u}] {item[0]} - {i} [{quality[item[3]-1]}p]", category=1, subcategory=2, filters=2)
+                    print(f"Checking: [{u}] {item[0]} - {i} [{quality[item[3]-1]}p]")
                 else:
-                    foundTorrent = NyaaPy.Nyaa.search(keyword=f"[{u}] {item[0]} - 0{i} [{quality[qualityChoice-1]}p]", category=1, subcategory=2, filters=2)
-                    print(f"Checking: [{u}] {item[0]} - 0{i} [{quality[qualityChoice-1]}p]")
+                    foundTorrent = NyaaPy.Nyaa.search(keyword=f"[{u}] {item[0]} - 0{i} [{quality[item[3]-1]}p]", category=1, subcategory=2, filters=2)
+                    print(f"Checking: [{u}] {item[0]} - 0{i} [{quality[item[3]-1]}p]")
             
             # If at least one torrent has been found [...]
                 if len(foundTorrent) != 0:
@@ -179,9 +181,9 @@ while True:
                 # [...] Else, the program alerts you that no torrent have been found with the corresponding name.
                 else:
                     if i >= 10:
-                         print(f"No torrent found for the name: [{u}] {item[0]} - {i} [{quality[qualityChoice-1]}p].\nMaybe it still hasn't aired...\n")
+                         print(f"No torrent found for the name: [{u}] {item[0]} - {i} [{quality[item[3]-1]}p].\nMaybe it still hasn't aired...\n")
                     else:
-                         print(f"No torrent found for the name: [{u}] {item[0]} - 0{i} [{quality[qualityChoice-1]}p].\nMaybe it still hasn't aired...\n")
+                         print(f"No torrent found for the name: [{u}] {item[0]} - 0{i} [{quality[item[3]-1]}p].\nMaybe it still hasn't aired...\n")
             
             if stillFoundTorrents:
                 continue   
