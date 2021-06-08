@@ -171,11 +171,13 @@ while True:
                         print("\n")
 
                         # We don't wanna download the same episode from two different uploaders...
+                        numAnime+=1
                         break
                     
                     # If the user chose magnet option
                     else:
                         webbrowser.open(magnet)
+                        numAnime+=1
                         break
             
                 # [...] Else, the program alerts you that no torrent have been found with the corresponding name.
@@ -191,9 +193,9 @@ while True:
         # This notifies you that every torrent from an anime has been fully downloaded
         toaster = win10toast.ToastNotifier()
         if answer == 1:
-            toaster.show_toast("Nyaa Auto-download", f"The anime {item[0]} has been succesffuly downloaded!")
+            toaster.show_toast("Nyaa Auto-download", f"The anime {item[0]} has been downloaded at " + str(round(numAnime*100/(end-begin+1), 2)).strip('0').strip('.') + "%!")
         else:
-            toaster.show_toast("Nyaa Auto-download", f"The anime {item[0]} has been successfully transferred to your torrent client.")
+            toaster.show_toast("Nyaa Auto-download", f"The anime {item[0]} has been transferred at " + str(round(numAnime*100/(end-begin+1), 2)).strip('0').strip('.') + "%!")
 
 
     break
