@@ -23,3 +23,9 @@ With the command pip install <library> you'll need to install the following ones
   
 <h1>Important Note for the binary (.exe) from the release</h1>
 win10toast doesn't work at all with PyToExe so you won't receive any Windows 10 notification when a download/transfer has been successfully completed. Instead, it will only prints in the console. If you still want these type of notification, you may use the Python Script from the source code since this binary can't do it.
+
+  
+  <h1> WORK IN PROGESS </h1>
+
+I will probably make the code smoother and more readable. Once I learn classes in Python, I will try to turn it into an OOP Project.
+If you have any suggestion, let me know!
