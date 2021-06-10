@@ -1,0 +1,3 @@
+NyaaPy
+win10toast
+requests
