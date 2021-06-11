@@ -1,25 +1,34 @@
-# Imports (I did not use from ... import ... since PyAutoExe can't include them in the binaries (idk why))
+
+#------------------------------IMPORTS------------------------------
+
 import NyaaPy
 import urllib.request
 import shutil
 import os
-import webbrowser
+import webbrowser as wb
 import win10toast
-import time
+from time import sleep
 
-# Because I don't know how to do it else. A simple, but still good, while True.
+#------------------------------GLOBAL VARIABLES------------------------------
+
+
+uploaders = ["Erai-raws", "SubsPlease"]
+
+quality = [480, 720, 1080]
+
+
+#------------------------------FUNCTIONS------------------------------
+
+
+def cleanConsole():
+    os.system("cls")
+
+
+#------------------------------MAIN PROGRAM------------------------------
 while True:
 
-    # If you want, you can add uploaders there. I only trust these two ones and they use the best encoding of all time.
-    uploaders = [
-        "Erai-raws",
-        "SubsPlease"
-    ]
 
-    # Every quality available.
-    quality = [480, 720, 1080]
-
-    # Main screen
+    # Main Screen
     print(
         "\nWelcome to my bulk downloader for Nyaa.si!\n\n"
         "\tNote: Make sure to write the title in \"Japanese\".\n"
@@ -31,31 +40,31 @@ while True:
         "Indeed, there are already multiple torrents that contains every single episodes. Think smart!\n"
         "If you find any bug, please make me know on my GitHub ~~> https://github.com/marcpinet\n\n"
     )
-
-    # Yes.
-    uselessVariable = input("Press Enter to continue...")
-
-    # We try to get mutliples list inside this list with the starting episode and the last one the user chose.
+    nextStep = input("Press ENTER to continue...")
     watchingAnimes = []
     stillWantsAnime = True
 
+
     while stillWantsAnime:
-        os.system("cls")
-        # Temporary list containing every informations needed for an anime.
-        tmp = []
+
+
+        cleanConsole()
+        tmp = [] 
+
+
+        # Asking the user to input the anime title.
         print("\n\nPlease, write the name of the anime you want to download:")
-        
         anime = ""
-        while len(anime) < 2:
+        while len(anime) <= 2:
             anime = input("> ")
-            if len(anime) < 2:
+            if len(anime) <= 2:
                 print("Please, be sure to enter a valide title (not a blank character!)")
-        
         tmp.append(anime)
 
+
+        # Asking the user to input the episode from where the download should begin...
         print("\n\nStarting from which episode?")
         begin = -1
-
         while begin not in range(1, 1000):
             try:
                 begin = int(input("> "))
@@ -66,9 +75,10 @@ while True:
                 print("Please, make sure to input a value between 1 and 1000.")
         tmp.append(begin)
 
+
+        # ... and where it should stop.
         print("\n\nUp to which episode?")
         end = -1
-
         while begin > end or end not in range(1, 1000):
             try:
                 end = int(input("> "))
@@ -79,9 +89,10 @@ while True:
                 print("Please, make sure to input a value greater than or equal to the previous one and lower than 1000!")
         tmp.append(end)
 
-        qualityChoice = 0
 
-        print("\n\nChoose a quality (you need to unter the corresponding number)\n\n\t1 - 480p\n\t2 - 720p\n\t3 - 1080p\n")
+        # The quality of the episodes will be defined by the user for each anime.?
+        qualityChoice = 0
+        print("\n\nIn which quality should the episode be downloaded in? (1=480p, 2=720p, 3=1080p)")
         while qualityChoice not in [1, 2, 3]:
             try:
                 qualityChoice = int(input("> "))
@@ -92,14 +103,16 @@ while True:
                 print("Please, make sure to answer either 1, 2 or 3.")
         tmp.append(qualityChoice)
 
+
+        # Finally, we append the tmp list that contains every gathered information above to the main list that will contains every anime.
         watchingAnimes.append(tmp)
-        os.system("cls")
-        print(f"\nAlright, I will download {anime} from episode {begin} to {end} in {quality[qualityChoice-1]}p.\n\n")
+        cleanConsole()
+        print(f"\n\nAlright, I will download {anime} from episode {begin} to {end} in {quality[qualityChoice-1]}p.")
 
-        # From there, the user will decide wether he wants to download more animes or not.
-        print("Do you want to download another anime? (1=Yes, 2=No)\n")
+
+        # From there, the user will decide whether he wants to download more animes or not.
+        print("Do you want to download another anime? (1=Yes, 2=No)")
         answer = 0
-
         while answer not in [1, 2]:
             try:
                 answer = int(input("> "))
@@ -112,13 +125,13 @@ while True:
                 stillWantsAnime = False
                 os.system("cls")
 
-    os.system("cls")
 
-    nbFound = len(watchingAnimes)
+    cleanConsole()
 
-    print("\nFinally, download torrents or open magnets in client? (1=.torrent, 2=magnet)\n")
+
+    # Finally, the user will have to choose wheter we wants to download them as a .torrent or directly import them as magnet in his/her torrent client.
+    print("\n\nFinally, download torrents or open magnets in client? (1=.torrent, 2=magnet)")
     answer = 0
-
     while answer not in [1, 2]:
         try:
             answer = int(input("> "))
@@ -127,29 +140,45 @@ while True:
             continue
         if answer not in [1, 2]:
             print("Please, make sure to answer either 1 or 2.")
+    verbalBase = "downloaded" if answer == 1 else "transferred"
 
-    os.system("cls")
 
-    # For each anime you're watching
+    cleanConsole()
+
+
+    missingTorrents = []
+
+
+    # For each anime the user has inputted...
     for item in watchingAnimes:
-        # We make the program thinks that no torrent have been found and we start to the first anime (0)
-        stillFoundTorrents = False
+
+
+        # The number of downloaded episode of the currently checked anime (item). Will be used to calculate percentage.
         numAnime = 0
+
 
         # For each episode from the anime...
         for i in range(int(item[1]), int(item[2] + 1)):
+            
+
             # The program tries to retrieve from Nyaa.si the list of results for the anime and the corresponding episode. It often takes the most recent one.
             for u in uploaders:
+
 
                 if i >= 10:
                     foundTorrent = NyaaPy.Nyaa.search(keyword=f"[{u}] {item[0]} - {i} [{quality[item[3]-1]}p]", category=1, subcategory=2, filters=2)
                     print(f"Checking: [{u}] {item[0]} - {i} [{quality[item[3]-1]}p]")
+                
+
                 else:
                     foundTorrent = NyaaPy.Nyaa.search(keyword=f"[{u}] {item[0]} - 0{i} [{quality[item[3]-1]}p]", category=1, subcategory=2, filters=2)
                     print(f"Checking: [{u}] {item[0]} - 0{i} [{quality[item[3]-1]}p]")
             
+
             # If at least one torrent has been found [...]
                 if len(foundTorrent) != 0:
+
+
                     # We take the only two variables from the dictionary we are interested in (the result from the query stored in the variable foundTorrent)
                     downloadLink = foundTorrent[0]["download_url"]
                     torrentName = foundTorrent[0]["name"] + ".torrent"
@@ -157,49 +186,91 @@ while True:
                     # We put this variable to True so the program will continue until there is a result
                     stillFoundTorrents = True
 
-                    # If the user chose .torrent option
+                    # If the user chose .torrent option...
                     if answer == 1:
-                        # To be honest with you, this one is a copy/paste from StackOverflow since it was my first web scrapping program. But I can tell you that I now understand what it does.
+            
+
                         # If you want more details, just read: https://stackoverflow.com/questions/7243750/download-file-from-web-in-python-3 
-                        os.system("mkdir DownloadedTorrents")
+                        os.system("mkdir DownloadedTorrents > nul 2>&1")
                         with urllib.request.urlopen(downloadLink) as response, open(torrentName, 'wb') as out_file:
                             shutil.copyfileobj(response, out_file)
-                            print(f"Downloading: {torrentName}, please wait...")
+                            print(f"Downloading: {torrentName}, please wait...\n")
                         
+
                         # We move the downloaded torrent to the dedicated folder.
-                        os.system(f"move \"{torrentName}\" \"DownloadedTorrents\\{torrentName}\"")
-                        print("\n")
+                        os.system(f"move \"{torrentName}\" \"DownloadedTorrents\\{torrentName}\" > nul 2>&1")
+
 
                         # We don't wanna download the same episode from two different uploaders...
                         numAnime+=1
                         break
                     
+
                     # If the user chose magnet option
                     else:
-                        webbrowser.open(magnet)
+                        print(f"Transferring to torrent client: {torrentName}, please wait...\n")
+                        wb.open(magnet)
                         numAnime+=1
                         break
             
+
                 # [...] Else, the program alerts you that no torrent have been found with the corresponding name.
                 else:
+
+
                     if i >= 10:
-                         print(f"No torrent found for the name: [{u}] {item[0]} - {i} [{quality[item[3]-1]}p].\nMaybe it still hasn't aired...\n")
+                        print(f"No torrent found for the name: [{u}] {item[0]} - {i} [{quality[item[3]-1]}p].\nEither it still hasn't aired or doesn't exist...\n")
+                        if f"{item[0]} - Episode {i}" not in missingTorrents:
+                            missingTorrents.append(f"{item[0]} - Episode {i}")
+
+
                     else:
-                         print(f"No torrent found for the name: [{u}] {item[0]} - 0{i} [{quality[item[3]-1]}p].\nMaybe it still hasn't aired...\n")
-            
-            if stillFoundTorrents:
-                continue   
+                        print(f"No torrent found for the name: [{u}] {item[0]} - 0{i} [{quality[item[3]-1]}p].\nEither it still hasn't aired or doesn't exist...\n")
+                        if f"{item[0]} - Episode 0{i}" not in missingTorrents:
+                            missingTorrents.append(f"{item[0]} - Episode {i}")
 
-        # This notifies you that every torrent from an anime has been fully downloaded
+
+        # This notifies you that every torrent from an anime has been fully downloaded.
         toaster = win10toast.ToastNotifier()
-        if answer == 1:
-            toaster.show_toast("Nyaa Auto-download", f"The anime {item[0]} has been downloaded at " + str(round(numAnime*100/(end-begin+1), 2)).strip('0').strip('.') + "%!")
-        else:
-            toaster.show_toast("Nyaa Auto-download", f"The anime {item[0]} has been transferred at " + str(round(numAnime*100/(end-begin+1), 2)).strip('0').strip('.') + "%!")
+        percentage = "0" if str(round(numAnime*100/(item[2]-item[1]+1), 2)).strip('0').strip('.') == "" else str(round(numAnime*100/(item[2]-item[1]+1), 2)).strip('0').strip('.')
+        toaster.show_toast("Nyaa Auto-download", f"The anime {item[0]} has been {verbalBase} at {percentage}%!")
+        percentageStock = []
+        percentageStock.append(percentage == "100")
 
 
+    # Getting out of the while True.
+    cleanConsole()
     break
 
-os.system("cls")
-print("\nAll anime have been successfully downloaded.\nThe program will now close.")
-time.sleep(4)
+
+# Creating Logs if missing episodes. Else, do nothing but tells the user that everything went well.
+if all(percentageStock):
+    print(f"\n\nEvery anime have been fully {verbalBase}! The program will now close itself...")
+else:
+    print("\n\nThe episodes that couldn't be downloaded have been stored in a .txt file.")
+    print("You can access it by going into the same folder as the python script.")
+    
+    os.system("echo > missingEpisodes.txt 2>&1")
+    text = '\n'.join(missingTorrents)
+
+    with open("missingEpisodes.txt", "w") as logs:
+        logs.write("The following episodes couldn't be downloaded:\n\n" + text + "\n")
+    logs.close()
+
+
+    print("\nDo wou want to open the .txt file from there or exit the program? (1=.txt, 2=exit)")
+    openTxtOrExit = 0
+    while openTxtOrExit not in [1, 2]:
+        try:
+            openTxtOrExit = int(input("> "))
+        except ValueError:
+            print("Please, make sure to input an integer.")
+            continue
+        if openTxtOrExit not in [1, 2]:
+            print("Please, make sure to answer either 1 or 2.")
+        elif openTxtOrExit == 1:
+            os.system("missingEpisodes.txt 2>&1")
+            print("File opened! The program will shutdown itself once you close the .txt...")
+
+
+sleep(5)
