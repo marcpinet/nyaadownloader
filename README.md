@@ -1,7 +1,3 @@
-# bulk-download-from-nyaa.si
-
-My first scrapper! It is focused on making easier to bulk download torrents/transfer magnets from Nyaa.si
-
 <h1> How it Works </h1>
 Everything is written into the script as a comment if you need some explainations. <br>
 If you want to add a provider like <b>Erai-Raws</b> or <b>SubsPlease</b> etc., you'll need to edit the list in the script.
