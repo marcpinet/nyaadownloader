@@ -227,7 +227,7 @@ while True:
                     else:
                         print(f"No torrent found for the name: [{u}] {item[0]} - 0{i} [{quality[item[3]-1]}p].\nEither it still hasn't aired or doesn't exist...\n")
                         if f"{item[0]} - Episode 0{i}" not in missingTorrents:
-                            missingTorrents.append(f"{item[0]} - Episode {i}")
+                            missingTorrents.append(f"{item[0]} - Episode 0{i}")
 
 
         # This notifies you that every torrent from an anime has been fully downloaded.
