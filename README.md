@@ -21,7 +21,7 @@ With the command pip install <library> you'll need to install the following ones
   • win10toast<br>
   • requests<br>
   
-To install them in one command, just download the `requirements.txt` and `cd <path>` with the cmd to where the file is located. Then run the following command : `pip install -r requirements.txt` and it should be done!
+To install them in one command, just download the `requirements.txt` and `cd <path>` with the cmd to where the file is located. Then run the following command: `pip install -r requirements.txt` and it should be done!
 <h1>Important Note for the binary (.exe) from the release</h1>
 win10toast doesn't work at all with PyToExe so you won't receive any Windows 10 notification when a download/transfer has been successfully completed. Instead, it will only prints in the console. If you still want these type of notification, you may use the Python Script from the source code since this binary can't do it.
 
