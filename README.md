@@ -1,6 +1,6 @@
 # bulk-download-from-nyaa.si
 
-My first scrapper! It is focused on making simplier to bulk download torrents from Nyaa.si
+My first scrapper! It is focused on making easier to bulk download torrents/transfer magnets from Nyaa.si
 
 <h1> How it Works </h1>
 Everything is written into the script as a comment if you need some explainations. <br>
