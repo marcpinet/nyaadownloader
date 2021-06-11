@@ -4,7 +4,7 @@ My first scrapper! It is focused on making simplier to bulk download torrents fr
 
 <h1> How it Works </h1>
 Everything is written into the script as a comment if you need some explainations. <br>
-If you want to add a provider like Erai-Raws or SubsPlease etc., you'll need to edit the list in the script.
+If you want to add a provider like <b>Erai-Raws</b> or <b>SubsPlease</b> etc., you'll need to edit the list in the script.
 Since they are the only two uploaders that are mainly active and trusted by Nyaa.si, I decided to only put those two. Feel free to add any other uploader you trust.<br><br>
 
 You specify the anime name, the episode where you want to start downloading, and then the last episode. You can also select the quality and download multiple anime at a time.<br><br>
@@ -29,4 +29,5 @@ win10toast doesn't work at all with PyToExe so you won't receive any Windows 10 
   <h1> WORK IN PROGRESS </h1>
 
 I will probably make the code smoother and more readable. Once I learn classes in Python, I will try to turn it into an OOP Project.
+The goal is to make a working GUI for the program.
 If you have any suggestion, let me know!
