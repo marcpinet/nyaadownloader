@@ -269,8 +269,8 @@ else:
         if openTxtOrExit not in [1, 2]:
             print("Please, make sure to answer either 1 or 2.")
         elif openTxtOrExit == 1:
-            os.system("missingEpisodes.txt 2>&1")
             print("File opened! The program will shutdown itself once you close the .txt...")
-
+            os.system("missingEpisodes.txt 2>&1")
+            
 
 sleep(5)
