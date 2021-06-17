@@ -24,6 +24,6 @@ win10toast doesn't work at all with PyToExe so you won't receive any Windows 10 
   
   <h1> WORK IN PROGRESS </h1>
 
-I will probably make the code smoother and more readable. Once I learn classes in Python, I will try to turn it into an OOP Project.
+I will probably make the code smoother and more readable in the future.
 The goal is to make a working GUI for the program.
 If you have any suggestion, let me know!
