@@ -223,7 +223,7 @@ def main():
 
                         # If the user chose magnet option
                         else:
-                            item.transfer(magnet)
+                            item.transfer(magnet, torrentName)
                             break
                 
 
