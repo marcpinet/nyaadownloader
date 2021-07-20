@@ -177,6 +177,8 @@ def main():
         # For each anime the user has inputted...
         for item in watchingAnimes:
 
+            # In order to exit the loop when an episode with the "END" tag is mentionned inside it (Erai-Raws does that, not SubsPlease)
+            unexpectedEnd = False
 
             # The number of downloaded episode of the currently checked anime (item). Will be used to calculate percentage.
             foundAnimes = 0
@@ -191,61 +193,74 @@ def main():
 
 
                     if i >= 10:
-                        foundTorrent = NyaaPy.Nyaa.search(keyword=f"[{u}] {item.name} - {i} [{item.quality}p]", category=1, subcategory=2, filters=2)
-                        print(f"Checking: [{u}] {item.name} - {i} [{item.quality}p]")
-                    
-
+                        epValue = str(i)
                     else:
-                        foundTorrent = NyaaPy.Nyaa.search(keyword=f"[{u}] {item.name} - 0{i} [{item.quality}p]", category=1, subcategory=2, filters=2)
-                        print(f"Checking: [{u}] {item.name} - 0{i} [{item.quality}p]")
+                        epValue = "0" + str(i)
+
+
+                    foundTorrent = NyaaPy.Nyaa.search(keyword=f"[{u}] {item.name} - {epValue} [{item.quality}p]", category=1, subcategory=2, filters=2)
+                    print(f"Checking: [{u}] {item.name} - {epValue} [{item.quality}p]")
                 
 
-                # If at least one torrent has been found [...]
+                    # If at least one torrent has been found [...]
                     if len(foundTorrent) != 0:
 
+                        # We take the closest title to what we are looking for in order to avoid errors while browsing among every found torrents
+                        torrent = None
+                        for t in foundTorrent:
+                            if t["name"].lower().find(f"{item.name} - {epValue}".lower()) != -1:
+                                torrent = t
+
+                        if torrent == None:
+                            torrent = foundTorrent[0]
+                            
 
                         # We take the only two variables from the dictionary we are interested in (the result from the query stored in the variable foundTorrent)
-                        downloadLink = foundTorrent[0]["download_url"]
-                        torrentName = foundTorrent[0]["name"] + ".torrent"
-                        magnet = foundTorrent[0]["magnet"]
+                        downloadLink = torrent["download_url"]
+                        torrentName = torrent["name"] + ".torrent"
+                        magnet = torrent["magnet"]
                         # We put this variable to True so the program will continue until there is a result
                         stillFoundTorrents = True
                         foundAnimes+=1
                         # If the user chose .torrent option...
                         if answer == 1:
-                
-
                             # We download and then move the downloaded torrent to the dedicated folder.
                             item.download(torrentName, downloadLink)
-                            # We don't wanna download the same episode from two different uploaders...
-                            break
-                        
 
                         # If the user chose magnet option
                         else:
+                            # We transfer it to a bittorent client which the user is supposed to have...
                             item.transfer(magnet, torrentName)
-                            break
-                
+                        
+
+                        if u == "Erai-raws" and torrentName.find(" END [") != -1:
+                            unexpectedEnd = True
+
+
+                        # We don't wanna download the same episode from two different uploaders...
+                        break
+
 
                     # [...] Else, the program alerts you that no torrent have been found with the corresponding name.
                     else:
+                        print(f"No torrent found for the name: [{u}] {item.name} - {epValue} [{item.quality}p].\nEither it still hasn't aired or doesn't exist...\n")
+                        if f"{item.name} - Episode {epValue}" not in missingTorrents:
+                            missingTorrents.append(f"{item.name} - Episode {epValue}")
 
 
-                        if i >= 10:
-                            print(f"No torrent found for the name: [{u}] {item.name} - {i} [{item.quality}p].\nEither it still hasn't aired or doesn't exist...\n")
-                            if f"{item.name} - Episode {i}" not in missingTorrents:
-                                missingTorrents.append(f"{item.name} - Episode {i}")
+                # So we don't check for inexistant title
+                if unexpectedEnd:
+                    break
 
 
-                        else:
-                            print(f"No torrent found for the name: [{u}] {item.name} - 0{i} [{item.quality}p].\nEither it still hasn't aired or doesn't exist...\n")
-                            if f"{item.name} - Episode 0{i}" not in missingTorrents:
-                                missingTorrents.append(f"{item.name} - Episode 0{i}")
+            if unexpectedEnd:
+                percentage = "0" if str(round(foundAnimes*100/(int(epValue) - item.begin + 1), 2)).strip('0').strip('.') == "" else str(round(foundAnimes*100/(int(epValue) - item.begin + 1), 2)).strip('0').strip('.')
 
-
+            else:
+                percentage = "0" if str(round(foundAnimes*100/(item.end - item.begin + 1), 2)).strip('0').strip('.') == "" else str(round(foundAnimes*100/(item.end - item.begin + 1), 2)).strip('0').strip('.')
+            
             # This notifies you that every torrent from an anime has been fully downloaded.
             toaster = win10toast.ToastNotifier()
-            percentage = "0" if str(round(foundAnimes*100/(item.end - item.begin + 1), 2)).strip('0').strip('.') == "" else str(round(foundAnimes*100/(item.end - item.begin + 1), 2)).strip('0').strip('.')
             toaster.show_toast("Nyaa Auto-download", f"The anime {item.name} has been {verbalBase} at {percentage}%!")
             percentageStock = []
             percentageStock.append(percentage == "100")
