@@ -6,7 +6,7 @@ Since they are the only two uploaders that are mainly active and trusted by Nyaa
 You specify the anime name, the episode where you want to start downloading, and then the last episode. You can also select the quality and download multiple anime at a time.<br><br>
 Most importantly, you can choose whether you want to download them as a .torrent or if you only want to open them in your torrent client by using magnet links.
 
-It's really fast, even if the code isn't well-written, it works and it doesn't steal your creditentials.<br>
+It's really fast, even if the code isn't well-written (be indulgent, I'm still a beginner).<br>
 Every downloaded torrent will be stored in a dedicated folder in the same folder as the script under the name "DownloadedTorrents".
 
 <h1>Requirements (only if you use the Python script)</h1>
@@ -24,6 +24,4 @@ win10toast doesn't work at all with PyToExe so you won't receive any Windows 10 
   
   <h1> WORK IN PROGRESS </h1>
 
-I will probably make the code smoother and more readable in the future.
-The goal is to make a working GUI for the program.
-If you have any suggestion, let me know!
+I will probably make the code smoother and more readable in the future. I will add more features when it will come to my mind. Feel free to post your suggestions in the Issue section.
