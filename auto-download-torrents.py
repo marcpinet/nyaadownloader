@@ -244,7 +244,7 @@ def main():
                     # [...] Else, the program alerts you that no torrent have been found with the corresponding name.
                     else:
                         print(f"No torrent found for the name: [{u}] {item.name} - {epValue} [{item.quality}p].\nEither it still hasn't aired or doesn't exist...\n")
-                        if f"{item.name} - Episode {epValue}" not in missingTorrents:
+                        if f"{item.name} - Episode {epValue}" not in missingTorrents and u == uploaders[-1]:
                             missingTorrents.append(f"{item.name} - Episode {epValue}")
 
 
@@ -273,7 +273,8 @@ def main():
 
     # Creating Logs if missing episodes. Else, do nothing but tells the user that everything went well.
     if all(percentageStock):
-        print(f"\n\nEvery anime have been fully {verbalBase}! The program will now close itself...")
+        print(f"\nEvery anime have been fully {verbalBase}!\n")
+        exitVariable = input("Press enter to exit...")
     else:
         print("\n\nThe episodes that couldn't be downloaded have been stored in a .txt file.")
         print("You can access it by going into the same folder as the python script.")
@@ -283,7 +284,6 @@ def main():
 
         with open("missingEpisodes.txt", "w") as logs:
             logs.write("The following episodes couldn't be downloaded:\n\n" + text + "\n")
-        logs.close()
 
 
         print("\nDo wou want to open the .txt file from there or exit the program? (1=.txt, 2=exit)")
