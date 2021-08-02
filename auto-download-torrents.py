@@ -33,15 +33,16 @@ class Anime:
         Anime.numberOfAnime += 1
 
 
-    def download(self, torrentName, downloadLink):
+    def download(self, torrentName, downloadLink, animeName):
         """
         If you want more details, just read: https://stackoverflow.com/questions/7243750/download-file-from-web-in-python-3 
         """
         os.system('mkdir DownloadedTorrents > nul 2>&1')
+        os.system(f'mkdir \"DownloadedTorrents\\{animeName}\" > nul 2>&1')
         with urllib.request.urlopen(downloadLink) as response, open(torrentName, 'wb') as out_file:
             shutil.copyfileobj(response, out_file)
             print(f"Downloading: {torrentName}, please wait...\n")
-        os.system(f"move \'{torrentName}\' \'DownloadedTorrents\\{torrentName}\' > nul 2>&1")
+        os.system(f"move \"{torrentName}\" \"DownloadedTorrents\\{animeName}\\{torrentName}\" > nul 2>&1")
 
 
     def transfer(self, magnet, torrentName=''):
@@ -60,17 +61,23 @@ def main():
 
         # Main Screen
         print(
-            """
-            \nWelcome to my bulk downloader for Nyaa.si!\n\n
-            \tNote: Make sure to write the title in "Japanese".\n
-            \tFor instance, instead of My Hero Academia, write Boku no Hero Academia.\n\n
-            \tSince uploaders often use the Japanese title, you won't be able to find your anime otherwise.\n
-            \tDon't worry, there is no case sensitivity.\n
-            \tIf you don't know how to say it, you may refer to MyAnimeList.net so you can get both translations.\n\n
-            Please note that this program isn't made for downloading things like One Piece, Naruto or Bleach.\n
-            Indeed, there are already multiple torrents that contains every single episodes. Think smart!\n
-            If you find any bug, please make me know on my GitHub ~~> https://github.com/marcpinet\n\n
-            """
+"""
+
+Welcome to my bulk downloader for Nyaa.si!
+
+\tNote: Make sure to write the title in "Japanese".
+\tFor instance, instead of My Hero Academia, write Boku no Hero Academia.
+
+\tSince uploaders often use the Japanese title, you won't be able to find your anime otherwise.
+\tDon't worry, there is no case sensitivity.
+
+\tIf you don't know how to say it, you may refer to MyAnimeList.net so you can get both translations.
+
+Please note that this program isn't made for downloading things like One Piece, Naruto or Bleach.
+Indeed, there are already multiple torrents that contains every single episodes. Think smart!
+If you find any bug, please make me know on my GitHub ~~> https://github.com/marcpinet
+
+"""
         )
         nextStep = input('Press ENTER to continue...')
         watchingAnimes = []
@@ -227,7 +234,11 @@ def main():
                         # If the user chose .torrent option...
                         if answer == 1:
                             # We download and then move the downloaded torrent to the dedicated folder.
-                            item.download(torrentName, downloadLink)
+                            foldername = item.name
+                            for s in ['\\', '/', ':', '*', '?', '"', '<', '>', '|']:
+                                foldername = foldername.replace(s, ' ')
+
+                            item.download(torrentName, downloadLink, foldername)
 
                         # If the user chose magnet option
                         else:
@@ -236,7 +247,7 @@ def main():
                         
 
                         if u == 'Erai-raws' and torrentName.find(' END [') != -1:
-                            print(f'Hey!, {item.name} has no more than {epValue}...')
+                            print(f'Hey!, {item.name} has no more than {epValue}...\n')
                             unexpectedEnd = True
 
 
@@ -277,7 +288,10 @@ def main():
     # Creating Logs if missing episodes. Else, do nothing but tells the user that everything went well.
     if all(percentageStock):
         print(f'\nEvery anime have been fully {verbalBase}!\n')
-        exitVariable = input('Press enter to exit...')
+        if verbalBase == 'downloaded':
+            exitVariable = input('Press enter to exit and open the folder containing .torrent files...')
+        else:
+            exitVariable = input('Press enter to exit...')
     else:
         print("\n\nThe episodes that couldn't be downloaded have been stored in a .txt file.")
         print('You can access it by going into the same folder as the python script.')
@@ -301,11 +315,16 @@ def main():
                 print('Please, make sure to answer either 1 or 2.')
             elif openTxtOrExit == 1:
                 print('File opened! The program will shutdown itself once you close the .txt...')
+                if verbalBase == 'downloaded':
+                    print('The folder containing .torrent files will then be opened.')
                 os.system('missingEpisodes.txt 2>&1')
                 sleep(5)
             else:
                 print('Ok.')
                 sleep(2.5)
+
+    if verbalBase == 'downloaded':
+        os.system('start DownloadedTorrents 2>&1')
 
 
 #------------------------------MAIN CALL------------------------------
