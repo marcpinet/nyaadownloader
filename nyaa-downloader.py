@@ -1,3 +1,4 @@
+
 #------------------------------IMPORTS------------------------------
 
 import NyaaPy
@@ -246,7 +247,7 @@ If you find any bug, please make me know on my GitHub ~~> https://github.com/mar
                         
 
                         if u == 'Erai-raws' and torrentName.find(' END [') != -1:
-                            print(f'Hey!, {item.name} has no more than {epValue}...\n')
+                            print(f'Hey, {item.name} has no more than {epValue} episodes!...\n')
                             unexpectedEnd = True
 
 
