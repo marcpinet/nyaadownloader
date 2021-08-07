@@ -206,6 +206,7 @@ If you find any bug, please make me know on my GitHub ~~> https://github.com/mar
         for anime in animeToDownload:
             print('\t', anime.name, 'from episode', anime.begin, 'to', anime.end, 'in', str(anime.quality) + 'p')
         nextStep = input('\n\nPress ENTER to continue...')
+        os.systme('cls')
         
         missingTorrents = []
 
