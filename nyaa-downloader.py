@@ -354,9 +354,8 @@ If you find any bug, please make me know on my GitHub ~~> https://github.com/mar
             
             # This notifies you that every torrent from an anime has been fully downloaded.
             toaster = win10toast.ToastNotifier()
-            toaster.show_toast('Nyaa Auto-download', f'The anime {batch.episode.name} has been {verbalBase} at {percentage}%!')
+            toaster.show_toast('Nyaa Downloader', f'The anime {batch.episode.name} has been {verbalBase} at {percentage}%!')
 
-            
             # Checking if every anime have indeed been downloaded at 100%
             if 'percentageStock' not in locals():
                 percentageStock = []
