@@ -244,6 +244,7 @@ If you find any bug, please make me know on my GitHub ~~> https://github.com/mar
 
         os.system('cls')
         
+        
         if Batch.numberOfBatchs == 1:
             print('\n\nThe following anime will be downloaded:\n')
         else:
@@ -279,17 +280,24 @@ If you find any bug, please make me know on my GitHub ~~> https://github.com/mar
                     foundTorrent = NyaaPy.Nyaa.search(keyword=f'[{u}] {batch.episode.name} - {epValue} [{batch.quality}p]', category=1, subcategory=2, filters=2)
                     print(f'Checking: [{u}] {batch.episode.name} - {epValue} [{batch.quality}p]')
 
-                    # If at least one torrent has been found [...]
-                    if len(foundTorrent) != 0:
-
+                    try:
                         # We take the closest title to what we are looking for in order to avoid errors while browsing among every found torrents
                         torrent = None
                         for t in foundTorrent:
                             if t['name'].lower().find(f'{batch.episode.name} - {epValue}'.lower()) != -1:
                                 torrent = t
 
+                        # Else, we take try to get the closest title to the one we are looking for.
                         if torrent == None:
-                            torrent = foundTorrent[0]
+                            for t in foundTorrent:
+                                if t['name'].lower().find(f'{batch.episode.name}'.lower()) != -1 and t['name'].lower().find(f'{epValue}'.lower()) != -1:
+                                    torrent = t
+                    
+                    except:
+                        pass
+                        
+                    # If at least one torrent has been found [...]
+                    if torrent != None:
 
                         # We take the only two variables from the dictionary we are interested in (the result from the query stored in the variable foundTorrent)
                         downloadlink = torrent['download_url']
@@ -298,7 +306,6 @@ If you find any bug, please make me know on my GitHub ~~> https://github.com/mar
                         
                         # We put this variable to True so the program will continue until there is a result
                         stillFoundTorrents = True
-                        
                         
                         # If the user chose .torrent option...
                         if answer == 1:
