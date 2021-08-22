@@ -14,7 +14,6 @@ from time import sleep
 
 # ------------------------------GLOBAL VARIABLES------------------------------
 
-
 # Default uploaders
 uploaders = ['Erai-raws', 'SubsPlease']
 
@@ -146,93 +145,91 @@ def main():
         percentage_stock = [] # Will be used to determine whether all anime have been succesfully downloaded or not.
         still_wants_anime = True
 
-        # Input of every anime informations
-        while still_wants_anime:
-            
-            
-            os.system('cls')
-            showUploaders()
-
-            # Input of the uploaders to be added (whether or not)
-            print('\n Firstly, add one? (1=Yes, 2=No)')
-            user_input = 0
-            while user_input not in [1, 2]:
-                try:
-                    user_input = int(input(' > '))
-                    
-                except ValueError:
-                    print(' Please, make sure to input an integer.')
-                    continue
+        os.system('cls')
+        showUploaders()
+        # Input of the uploaders to be added (whether or not)
+        print('\n Firstly, add one? (1=Yes, 2=No)')
+        user_input = 0
+        while user_input not in [1, 2]:
+            try:
+                user_input = int(input(' > '))
                 
-                if user_input not in [1, 2]:
-                    print(' Please, make sure to answer either 1 or 2.')
-                    
-                elif user_input == 1:
-                    print('\n\n Enter the name of the uploader you want to add (or type "-1" to stop): ')
-                    while user_input != '-1':
-                        user_input = input(' > ')
-                        if user_input != '-1':
-                            if user_input not in uploaders:
-                                uploaders.append(user_input)
-                                print(f' Added {user_input}')
-                                showUploaders()
-                            else:
-                                print(' This one is already in the list...')
-                                continue
-                            
-                            print('\n Add another one: (or type "-1" to stop)')
+            except ValueError:
+                print(' Please, make sure to input an integer.')
+                continue
+            
+            if user_input not in [1, 2]:
+                print(' Please, make sure to answer either 1 or 2.')
+                
+            elif user_input == 1:
+                print('\n\n Enter the name of the uploader you want to add (or type "-1" to stop): ')
+                while user_input != '-1':
+                    user_input = input(' > ')
+                    if user_input != '-1':
+                        if user_input not in uploaders:
+                            uploaders.append(user_input)
+                            print(f' Added {user_input}')
+                            showUploaders()
                         else:
-                            user_input = 2
-                            break
-                        
-                        
-            os.system('cls')
-            showUploaders()
-            
-            # Input of the uploaders to be removed (whether or not)
-            print('\n Next, remove one? (1=Yes, 2=No)')
-            user_input = -1
-            while user_input not in [1, 2]:
-                try:
-                    user_input = int(input(' > '))
-                    
-                except ValueError:
-                    print(' Please, make sure to input an integer.')
-                    continue
-                
-                if user_input not in [1, 2]:
-                    print(' Please, make sure to answer either 1 or 2.')
-                    
-                elif user_input == 1:
-                    
-                    user_input = 0
-                    print('\n\n Enter the number of the uploader you want to remove (or type "-1" to stop): ')
-                    while user_input != -1:
-                        try:
-                            user_input = int(input(' > '))
-                            
-                        except ValueError:
-                            print(' Please, make sure to input an integer.')
+                            print(' This one is already in the list...')
                             continue
                         
-                        if len(uploaders) == 1:
-                            print(" You can't remove the last one.")
-                            user_input = input('\n\n Press ENTER to continue...')
-                            user_input = 2
-                            break
+                        print('\n Add another one: (or type "-1" to stop)')
+                    else:
+                        user_input = 2
+                        break
+                    
+                    
+        os.system('cls')
+        showUploaders()
+        
+        # Input of the uploaders to be removed (whether or not)
+        print('\n Next, remove one? (1=Yes, 2=No)')
+        user_input = -1
+        while user_input not in [1, 2]:
+            try:
+                user_input = int(input(' > '))
+                
+            except ValueError:
+                print(' Please, make sure to input an integer.')
+                continue
+            
+            if user_input not in [1, 2]:
+                print(' Please, make sure to answer either 1 or 2.')
+                
+            elif user_input == 1:
+                
+                user_input = 0
+                print('\n\n Enter the number of the uploader you want to remove (or type "-1" to stop): ')
+                while user_input != -1:
+                    try:
+                        user_input = int(input(' > '))
                         
-                        if user_input == -1:
-                            user_input = 2
-                            break
-                        
-                        if user_input not in range(1, len(uploaders) + 1):
-                            print(f' Please, make sure to input an integer between 1 and {len(uploaders)}')
-                        
-                        elif user_input in range(1, len(uploaders) + 1):
-                            print(f' Removed {uploaders[user_input - 1]}')
-                            del uploaders[user_input - 1]
-                            showUploaders()
-                            print('\n Remove another one: (or type "-1" to stop)')
+                    except ValueError:
+                        print(' Please, make sure to input an integer.')
+                        continue
+                    
+                    if len(uploaders) == 1:
+                        print(" You can't remove the last one.")
+                        user_input = input('\n\n Press ENTER to continue...')
+                        user_input = 2
+                        break
+                    
+                    if user_input == -1:
+                        user_input = 2
+                        break
+                    
+                    if user_input not in range(1, len(uploaders) + 1):
+                        print(f' Please, make sure to input an integer between 1 and {len(uploaders)}')
+                    
+                    elif user_input in range(1, len(uploaders) + 1):
+                        print(f' Removed {uploaders[user_input - 1]}')
+                        del uploaders[user_input - 1]
+                        showUploaders()
+                        print('\n Remove another one: (or type "-1" to stop)')
+
+        # Input of every anime informations
+        while still_wants_anime:
                             
             
             os.system('cls')
