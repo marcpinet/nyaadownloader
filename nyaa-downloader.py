@@ -14,6 +14,7 @@ from time import sleep
 
 # ------------------------------GLOBAL VARIABLES------------------------------
 
+
 # Default uploaders
 uploaders = ['Erai-raws', 'SubsPlease']
 
