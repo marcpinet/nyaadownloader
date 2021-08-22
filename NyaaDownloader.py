@@ -73,12 +73,11 @@ class Batch:
         
         print(f" Downloading: {torrent['name']}, please wait...\n")
         try :
-            with urllib.request.urlopen(torrent['download_url']) as response, open(torrent['name'], 'wb') as out_file:
+            with urllib.request.urlopen(torrent['download_url']) as response, open(torrent['name'] + '.torrent', 'wb') as out_file:
                 shutil.copyfileobj(response, out_file)
             
             # I prefer to add the .torrent at the very last moment so that the user will know if the file has fully downloaded (moved to the right folder once it's done).
-            # If it doesn't have the .torrent extension, it will show as a normal file with the basic icon (visual indicator is a plus).
-            os.system(f"move \"{torrent['name']}\" \"DownloadedTorrents\\{foldername}\\{torrent['name']}.torrent\" > nul 2>&1")    
+            os.system(f"move \"{torrent['name']}.torrent\" \"DownloadedTorrents\\{foldername}\\{torrent['name']}.torrent\" > nul 2>&1")    
             
             self.successful += 1
             
@@ -145,8 +144,11 @@ def main():
         percentage_stock = [] # Will be used to determine whether all anime have been succesfully downloaded or not.
         still_wants_anime = True
 
+
         os.system('cls')
         showUploaders()
+
+
         # Input of the uploaders to be added (whether or not)
         print('\n Firstly, add one? (1=Yes, 2=No)')
         user_input = 0
@@ -179,10 +181,11 @@ def main():
                         user_input = 2
                         break
                     
-                    
+        
         os.system('cls')
         showUploaders()
         
+
         # Input of the uploaders to be removed (whether or not)
         print('\n Next, remove one? (1=Yes, 2=No)')
         user_input = -1
@@ -385,14 +388,14 @@ def main():
                         # We take the very closest title to what we are looking for in order to avoid errors while browsing among every found torrents
                         torrent = None
                         for t in found_torrents:
-                            if t['name'].lower().find(f'{batch.name} - {ep_value}'.lower()) != -1:
+                            if t['name'].lower().find(f'{batch.name} - {ep_value}'.lower()) != -1 and t['name'].lower().find('~') == -1: # we want to avoid ~ because Erai-Raws use it for already packed episodes
                                 torrent = t
                                 break # break if found, so we get the most recent one
 
                         # Else, we take try to get the closest title to the one we are looking for. (break if found, so we get the most recent one)
                         if torrent == None:
                             for t in found_torrents:
-                                if t['name'].lower().find(f'{batch.name}'.lower()) != -1 and t['name'].lower().find(f' {ep_value} ') != -1:
+                                if t['name'].lower().find(f'{batch.name}'.lower()) != -1 and t['name'].lower().find(f' {ep_value} ') != -1 and t['name'].lower().find('~') == -1: # we want to avoid ~ because Erai-Raws use it for already packed episodes
                                     torrent = t
                                     break
                     
