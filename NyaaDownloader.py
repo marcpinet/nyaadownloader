@@ -14,6 +14,7 @@ from time import sleep
 
 # ------------------------------GLOBAL VARIABLES------------------------------
 
+
 # Default uploaders
 uploaders = ['Erai-raws', 'SubsPlease']
 
@@ -52,6 +53,7 @@ class Batch:
         self.begin = begin
         self.end = end
         self.successful = 0
+        self.fail_number = 0
         Batch.failed = []
         
     def download(self, torrent: dict):
@@ -164,19 +166,19 @@ def main():
                 print(' Please, make sure to answer either 1 or 2.')
                 
             elif user_input == 1:
-                print('\n\n Enter the name of the uploader you want to add (or type "-1" to stop): ')
+                print('\n\n Enter the name of the uploader you want to add (or type "-1" to skip this step): ')
                 while user_input != '-1':
                     user_input = input(' > ')
                     if user_input != '-1':
                         if user_input not in uploaders:
-                            uploaders.append(user_input)
+                            uploaders.strip().append(user_input)
                             print(f' Added {user_input}')
                             showUploaders()
                         else:
                             print(' This one is already in the list...')
                             continue
                         
-                        print('\n Add another one: (or type "-1" to stop)')
+                        print('\n Add another one: (or type "-1" to skip this step)')
                     else:
                         user_input = 2
                         break
@@ -260,7 +262,7 @@ def main():
 
             # Asking the user to input the episode from where the download should begin...
             print('\n\n Starting from which episode?')
-            anime_begin = -1
+            anime_begin = 0
             while anime_begin not in range(1, 1000):
                 try:
                     anime_begin = int(input(' > '))
@@ -274,8 +276,8 @@ def main():
 
 
             # ... and where it should stop.
-            print('\n\n Up to which episode?')
-            anime_end = -1
+            print('\n\n Up to which episode? (or type -1 to get all episodes)')
+            anime_end = 0
             while anime_begin > anime_end or anime_end not in range(1, 1000):
                 try:
                     anime_end = int(input(' > '))
@@ -283,12 +285,16 @@ def main():
                 except ValueError:
                     print(' Please, make sure to input an integer.')
                     continue
+
+                if anime_end == -1:
+                    anime_end = 1000 # The user can't type 1000, so we'll use that value to identify his choice
+                    break
                 
-                if anime_begin > anime_end or anime_end not in range(1, 1000):
+                elif anime_begin > anime_end or anime_end not in range(1, 1000):
                     print(' Please, make sure to input a value greater than or equal to the previous one and lower than 1000!')
 
 
-            # The quality of the episodes will be defined by the user for each anime.?
+            # The quality of the episodes will be defined by the user for each anime?
             quality_choice = 0
             print('\n\n In which quality should the episode be downloaded in? (1=480p, 2=720p, 3=1080p)')
             while quality_choice not in [1, 2, 3]:
@@ -306,7 +312,7 @@ def main():
             # Finally, we append the class to the list of animes.
             anime_to_check.append(Batch(anime_name, quality_choice, anime_begin, anime_end))
             os.system('cls')
-            print(f'\n\n Alright, {anime_name} from episode {anime_begin} to {anime_end} will be downloaded in {qualities[quality_choice-1]}p.')
+            print(f'\n\n Alright, {anime_name} from episode {anime_begin} to {anime_end if anime_end != 1000 else "the end"} will be downloaded in {qualities[quality_choice-1]}p.')
 
 
             # From there, the user will decide whether he wants to download more animes or not.
@@ -354,7 +360,7 @@ def main():
         else:
             print(f'\n\n These {len(anime_to_check)} anime will be downloaded:\n')
         for batch in anime_to_check:
-            print('\t', batch.name, 'from episode', batch.begin, 'to', batch.end, 'in', str(batch.quality) + 'p')
+            print('\t', batch.name, 'from episode', batch.begin, 'to', batch.end if batch.end != 1000 else "the end", 'in', str(batch.quality) + 'p')
         user_input = input('\n\n Press ENTER to continue...')
         os.system('cls')
 
@@ -405,6 +411,9 @@ def main():
                         
                     # If at least one torrent has been found [...]
                     if torrent != None:
+
+                        # Note: If 5 torrents ___in a row___ couldn't be retrieved and the user choose the option 'download full show', it will stop checking
+                        batch.fail_number = 0
                         
                         # If the user chose .torrent option...
                         if torr_choice == 1:
@@ -418,7 +427,7 @@ def main():
                     
 
                         if u == 'Erai-raws' and torrent['name'].find(' END [') != -1:
-                            print(f' Hey, {batch.name} has no more than {ep_value} episodes!\n')
+                            print(f' Hey, {batch.name} has no more than {ep_value} episodes!\n') if batch.end != 1000 else print(' Last episode reached.\n')
                             unexpected_end = True
 
 
@@ -433,14 +442,23 @@ def main():
                         # When uploaders reaches the index -1, it means that every uploader has been tried.
                         if u == uploaders[-1]:
                             Batch.failed.append({'name': f'{batch.name} - {ep_value}', 'reason': 'Does not exist on Nyaa.si', 'code': '0'})
+                            batch.fail_number += 1
+
+                            if batch.end == 1000 and batch.fail_number > 4:
+                                print(f' Last episode seems to be the last one found.\n')
+                                del Batch.failed[-5:]
+                                unexpected_end = True
+                                break
 
 
                 # So we don't check for inexistant title
                 if unexpected_end:
                     break
 
+            if batch.end == 1000:
+                percentage = '0' if str(round(batch.successful*100/(int(ep_value) - 5 - batch.begin + 1), 2)).strip('0').strip('.') == '' else str(round(batch.successful*100/(int(ep_value) - 5 - batch.begin + 1), 2)).strip('0').strip('.')
 
-            if unexpected_end:
+            elif unexpected_end:
                 percentage = '0' if str(round(batch.successful*100/(int(ep_value) - batch.begin + 1), 2)).strip('0').strip('.') == '' else str(round(batch.successful*100/(int(ep_value) - batch.begin + 1), 2)).strip('0').strip('.')
 
             else:
@@ -502,7 +520,7 @@ def main():
                 print(' Please, make sure to answer either 1 or 2.')
                 
             elif user_input == 1:
-                print(' \n\nFile opened! The program will shutdown itself in 5 seconds...')
+                print('\n\n File opened! The program will shutdown itself in 5 seconds...')
                 
                 if verbal_base == 'downloaded':
                     print(' The folder containing .torrent files will then be opened.')
