@@ -445,7 +445,7 @@ def main():
                             batch.fail_number += 1
 
                             if batch.end == 1000 and batch.fail_number > 4:
-                                print(f' Last episode seems to be the last one found.\n')
+                                print(f' Last episode seems to be the last one found ({int(ep_value) - 5}).\n')
                                 del Batch.failed[-5:]
                                 unexpected_end = True
                                 break
@@ -455,7 +455,7 @@ def main():
                 if unexpected_end:
                     break
 
-            if batch.end == 1000:
+            if batch.end == 1000 and torrent['name'].find(' END [') == -1:
                 percentage = '0' if str(round(batch.successful*100/(int(ep_value) - 5 - batch.begin + 1), 2)).strip('0').strip('.') == '' else str(round(batch.successful*100/(int(ep_value) - 5 - batch.begin + 1), 2)).strip('0').strip('.')
 
             elif unexpected_end:
