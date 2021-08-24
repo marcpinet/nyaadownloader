@@ -19,13 +19,13 @@ from time import sleep
 uploaders = ['Erai-raws', 'SubsPlease']
 
 # Different qualities available
-qualities = [480, 720, 1080]
+QUALITIES = (480, 720, 1080)
 
 
 #------------------------------CLASSES, METHODS & FUNCTIONS------------------------------
 
 
-def showUploaders():
+def show_uploaders():
     print('\n\n The current uploaders are: \n')
     i = 1
     for uploader in uploaders:
@@ -49,7 +49,7 @@ class Batch:
             end (int): Episode number of the last episode the user wants to download.
         """
         self.name = name
-        self.quality = qualities[quality-1]
+        self.quality = QUALITIES[quality-1]
         self.begin = begin
         self.end = end
         self.successful = 0
@@ -86,7 +86,6 @@ class Batch:
         except:
             print(' Download failed. Please, check your internet connection.\n')
             Batch.failed.append({'name': torrent['name'], 'reason': 'No internet connection or file permission error', 'code': '1'})
-
 
     def transfer(self, torrent: dict):
         """Opens the user's torrent client and transfers the file to it.
@@ -143,12 +142,12 @@ def main():
         
         user_input = input(' Press ENTER to continue...')
         anime_to_check = []
-        percentage_stock = [] # Will be used to determine whether all anime have been succesfully downloaded or not.
+        percentage_stock = []  # Will be used to determine whether all anime have been succesfully downloaded or not.
         still_wants_anime = True
 
 
         os.system('cls')
-        showUploaders()
+        show_uploaders()
 
 
         # Input of the uploaders to be added (whether or not)
@@ -173,7 +172,7 @@ def main():
                         if user_input not in uploaders:
                             uploaders.strip().append(user_input)
                             print(f' Added {user_input}')
-                            showUploaders()
+                            show_uploaders()
                         else:
                             print(' This one is already in the list...')
                             continue
@@ -185,7 +184,7 @@ def main():
                     
         
         os.system('cls')
-        showUploaders()
+        show_uploaders()
         
 
         # Input of the uploaders to be removed (whether or not)
@@ -224,13 +223,13 @@ def main():
                         user_input = 2
                         break
                     
-                    if user_input not in range(1, len(uploaders) + 1):
+                    if user_input not in range(1, len(uploaders)+1):
                         print(f' Please, make sure to input an integer between 1 and {len(uploaders)}')
                     
-                    elif user_input in range(1, len(uploaders) + 1):
-                        print(f' Removed {uploaders[user_input - 1]}')
-                        del uploaders[user_input - 1]
-                        showUploaders()
+                    elif user_input in range(1, len(uploaders)+1):
+                        print(f' Removed {uploaders[user_input-1]}')
+                        del uploaders[user_input-1]
+                        show_uploaders()
                         print('\n Remove another one: (or type "-1" to stop)')
 
         # Input of every anime informations
@@ -254,7 +253,7 @@ def main():
                 try:
                     if len(NyaaPy.Nyaa.search(keyword=anime_name, category=1, subcategory=2, filters=2)) == 0:
                         print(" This anime doesn't exit in Nyaa.si database. Try to check its spelling on MyAnimeList.net or read yourself again!")
-                        anime_name = '' # We reset it, so the user will be asked again.
+                        anime_name = ''  # We reset it, so the user will be asked again.
                     
                 except:
                     sys.exit(" No internet connection available")
@@ -287,7 +286,7 @@ def main():
                     continue
 
                 if anime_end == -1:
-                    anime_end = 1000 # The user can't type 1000, so we'll use that value to identify his choice
+                    anime_end = 1000  # The user can't type 1000, so we'll use that value to identify his choice
                     break
                 
                 elif anime_begin > anime_end or anime_end not in range(1, 1000):
@@ -312,7 +311,7 @@ def main():
             # Finally, we append the class to the list of animes.
             anime_to_check.append(Batch(anime_name, quality_choice, anime_begin, anime_end))
             os.system('cls')
-            print(f'\n\n Alright, {anime_name} from episode {anime_begin} to {anime_end if anime_end != 1000 else "the end"} will be downloaded in {qualities[quality_choice-1]}p.')
+            print(f'\n\n Alright, {anime_name} from episode {anime_begin} to {anime_end if anime_end != 1000 else "the end"} will be downloaded in {QUALITIES[quality_choice-1]}p.')
 
 
             # From there, the user will decide whether he wants to download more animes or not.
@@ -394,14 +393,14 @@ def main():
                         # We take the very closest title to what we are looking for in order to avoid errors while browsing among every found torrents
                         torrent = None
                         for t in found_torrents:
-                            if t['name'].lower().find(f'{batch.name} - {ep_value}'.lower()) != -1 and t['name'].lower().find('~') == -1: # we want to avoid ~ because Erai-Raws use it for already packed episodes
+                            if t['name'].lower().find(f'{batch.name} - {ep_value}'.lower()) != -1 and t['name'].lower().find('~') == -1:  # we want to avoid ~ because Erai-Raws use it for already packed episodes
                                 torrent = t
-                                break # break if found, so we get the most recent one
+                                break  # break if found, so we get the most recent one
 
                         # Else, we take try to get the closest title to the one we are looking for. (break if found, so we get the most recent one)
-                        if torrent == None:
+                        if torrent is None:
                             for t in found_torrents:
-                                if t['name'].lower().find(f'{batch.name}'.lower()) != -1 and t['name'].lower().find(f' {ep_value} ') != -1 and t['name'].lower().find('~') == -1: # we want to avoid ~ because Erai-Raws use it for already packed episodes
+                                if t['name'].lower().find(f'{batch.name}'.lower()) != -1 and t['name'].lower().find(f' {ep_value} ') != -1 and t['name'].lower().find('~') == -1:  # we want to avoid ~ because Erai-Raws use it for already packed episodes
                                     torrent = t
                                     break
                     
@@ -410,7 +409,7 @@ def main():
                         pass
                         
                     # If at least one torrent has been found [...]
-                    if torrent != None:
+                    if torrent is not None:
 
                         # Note: If 5 torrents ___in a row___ couldn't be retrieved and the user choose the option 'download full show', it will stop checking
                         batch.fail_number = 0
@@ -445,7 +444,7 @@ def main():
                             batch.fail_number += 1
 
                             if batch.end == 1000 and batch.fail_number > 4:
-                                print(f' Last episode seems to be the last one found ({int(ep_value) - 5}).\n')
+                                print(f' Last episode seems to be the last one found ({int(ep_value)-5}).\n')
                                 del Batch.failed[-5:]
                                 unexpected_end = True
                                 break
