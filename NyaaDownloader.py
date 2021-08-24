@@ -49,7 +49,7 @@ class Batch:
             end (int): Episode number of the last episode the user wants to download.
         """
         self.name = name
-        self.quality = QUALITIES[quality-1]
+        self.quality = QUALITIES[quality - 1]
         self.begin = begin
         self.end = end
         self.successful = 0
@@ -227,8 +227,8 @@ def main():
                         print(f' Please, make sure to input an integer between 1 and {len(uploaders)}')
                     
                     elif user_input in range(1, len(uploaders)+1):
-                        print(f' Removed {uploaders[user_input-1]}')
-                        del uploaders[user_input-1]
+                        print(f' Removed {uploaders[user_input - 1]}')
+                        del uploaders[user_input - 1]
                         show_uploaders()
                         print('\n Remove another one: (or type "-1" to stop)')
 
@@ -311,7 +311,7 @@ def main():
             # Finally, we append the class to the list of animes.
             anime_to_check.append(Batch(anime_name, quality_choice, anime_begin, anime_end))
             os.system('cls')
-            print(f'\n\n Alright, {anime_name} from episode {anime_begin} to {anime_end if anime_end != 1000 else "the end"} will be downloaded in {QUALITIES[quality_choice-1]}p.')
+            print(f'\n\n Alright, {anime_name} from episode {anime_begin} to {anime_end if anime_end != 1000 else "the end"} will be downloaded in {QUALITIES[quality_choice - 1]}p.')
 
 
             # From there, the user will decide whether he wants to download more animes or not.
@@ -444,7 +444,7 @@ def main():
                             batch.fail_number += 1
 
                             if batch.end == 1000 and batch.fail_number > 4:
-                                print(f' Last episode seems to be the last one found ({int(ep_value)-5}).\n')
+                                print(f' Last episode seems to be the last one found ({int(ep_value) - 5}).\n')
                                 del Batch.failed[-5:]
                                 unexpected_end = True
                                 break
