@@ -49,7 +49,7 @@ class Batch:
             end (int): Episode number of the last episode the user wants to download.
         """
         self.name = name
-        self.quality = QUALITIES[quality - 1]
+        self.quality = QUALITIES[quality-1]
         self.begin = begin
         self.end = end
         self.successful = 0
@@ -135,7 +135,7 @@ def main():
 \t Don't make it wrong, you can still download the latest episodes of things like One Piece.
 \t It only depends on whether the uploaders uploaded them episode by episode or not.
  
- If you find any bug, please make me know on my GitHub ~~> https://github.com/marcpinet
+ If you find any bug, please let me know on my GitHub ~~> https://github.com/marcpinet
 
 """
         )
@@ -227,8 +227,8 @@ def main():
                         print(f' Please, make sure to input an integer between 1 and {len(uploaders)}')
                     
                     elif user_input in range(1, len(uploaders)+1):
-                        print(f' Removed {uploaders[user_input - 1]}')
-                        del uploaders[user_input - 1]
+                        print(f' Removed {uploaders[user_input-1]}')
+                        del uploaders[user_input-1]
                         show_uploaders()
                         print('\n Remove another one: (or type "-1" to stop)')
 
@@ -311,7 +311,7 @@ def main():
             # Finally, we append the class to the list of animes.
             anime_to_check.append(Batch(anime_name, quality_choice, anime_begin, anime_end))
             os.system('cls')
-            print(f'\n\n Alright, {anime_name} from episode {anime_begin} to {anime_end if anime_end != 1000 else "the end"} will be downloaded in {QUALITIES[quality_choice - 1]}p.')
+            print(f'\n\n Alright, {anime_name} from episode {anime_begin} to {anime_end if anime_end != 1000 else "the end"} will be downloaded in {QUALITIES[quality_choice-1]}p.')
 
 
             # From there, the user will decide whether he wants to download more animes or not.
@@ -444,7 +444,7 @@ def main():
                             batch.fail_number += 1
 
                             if batch.end == 1000 and batch.fail_number > 4:
-                                print(f' Last episode seems to be the last one found ({int(ep_value) - 5}).\n')
+                                print(f' Last episode seems to be the last one found ({int(ep_value)-5}).\n')
                                 del Batch.failed[-5:]
                                 unexpected_end = True
                                 break
@@ -453,11 +453,13 @@ def main():
                 # So we don't check for inexistant title
                 if unexpected_end:
                     break
-
-            if batch.end == 1000 and torrent['name'].find(' END [') == -1:
+            
+            # If has been interrupted by the fact that there is no more episode to download
+            if unexpected_end and torrent is None:
                 percentage = '0' if str(round(batch.successful*100/(int(ep_value) - 5 - batch.begin + 1), 2)).strip('0').strip('.') == '' else str(round(batch.successful*100/(int(ep_value) - 5 - batch.begin + 1), 2)).strip('0').strip('.')
-
-            elif unexpected_end:
+            
+            # If has been interrupted by the fact that the torrent has "END" in its name
+            elif unexpected_end and torrent is not None:
                 percentage = '0' if str(round(batch.successful*100/(int(ep_value) - batch.begin + 1), 2)).strip('0').strip('.') == '' else str(round(batch.successful*100/(int(ep_value) - batch.begin + 1), 2)).strip('0').strip('.')
 
             else:
