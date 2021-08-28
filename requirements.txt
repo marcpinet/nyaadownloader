@@ -1,0 +1,4 @@
+nyaapy==0.6.1
+winotify==1.0.4
+requests==2.25.1
+PyQt5==5.15.4
