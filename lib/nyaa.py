@@ -9,7 +9,8 @@ import webbrowser as wb
 
 # ------------------------------FUNCTIONS------------------------------
 
-def is_in_database(anime_name):
+
+def is_in_database(anime_name: str):
     """Check if anime exists in Nyaa database
     Args:
         anime_name (str): Name of the anime to check.
@@ -36,7 +37,7 @@ def download(torrent: dict):
         torrent (dict): The dictionary returned by the NyaaPy.search() method.
 
     Returns:
-        bool: Returns True if successful, False otherwise.
+        bool: True if the transfer was successful, False otherwise.
     """
     try :
         with urllib.request.urlopen(torrent['download_url']) as response, open(torrent['name'] + '.torrent', 'wb') as out_file:
@@ -52,9 +53,9 @@ def transfer(torrent: dict):
     """Opens the user's torrent client and transfers the file to it.
     Args:
         torrent (dict): The dictionary returned by the NyaaPy.search() method.
-        
+
     Returns:
-        bool: Returns True if successful, False otherwise.
+        bool: True if the transfer was successful, False otherwise.
     """
     try:
         wb.open(torrent['magnet'])
@@ -76,6 +77,7 @@ def find_torrent(uploader: str, anime_name: str, episode: int, quality: int):
         dict: Returns torrent if found, else None.
     """
     
+    # Because anime title usually have their episode number like '0X' when X < 10, we need to add a 0 to the episode number.
     if episode >= 10:
         episode = str(episode)
     else:
@@ -97,7 +99,7 @@ def find_torrent(uploader: str, anime_name: str, episode: int, quality: int):
                     torrent = t
                     break
                         
-    # The only exception possible is that no torrent have been found when NyaaPy.Nyaa.search() => torrent = None => goes to the else block.
+    # The only exception possible is that no torrent have been found when NyaaPy.Nyaa.search() (we are doing dict operations on a None object => raise an exception)
     except:
         return None
     
