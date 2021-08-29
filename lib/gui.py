@@ -2,22 +2,41 @@
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox
-from PyQt5.QtCore import Qt
+from PyQt5.QtWidgets import QMessageBox, QDialog
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from . import nyaa
 from winotify import Notification, audio
 from shutil import move
 
 import textwrap
 import os
-import threading
 
+
+# ------------------------------GLOBAL VARIABLES------------------------------
+
+
+# So the thread can access them (didn't found a better way to do it, I'm still learning paralel programming)
+# and because PyQt classes uses self keyword, I couldn't just use static methods so I just simply make those variables global
+uploaders = []
+anime_name= ''
+start_end = ()
+quality = -1
+option = -1
+path = ''
+verbal_base = ''
 
 # ------------------------------CLASSES AND METHODS------------------------------
 
 
-class Ui_MainWindow(object):
+# Generated with Qt Designer (first time using this one)
+class Ui_MainWindow(QDialog):
+    
     def setupUi(self, MainWindow):
+        """Build skeleton of the GUI
+
+        Args:
+            MainWindow (QMainWindow): Main window of the GUI
+        """
         MainWindow.setObjectName('NyaaDownloader')
         MainWindow.setWindowIcon(QtGui.QIcon('ico/nyaa.ico'))
         MainWindow.resize(800, 440)
@@ -113,6 +132,11 @@ class Ui_MainWindow(object):
 
 
     def retranslateUi(self, MainWindow):
+        """Setting properties and text of widgets
+
+        Args:
+            MainWindow (QMainWindow): Main window of the GUI
+        """
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate('MainWindow', 'NyaaDownloader'))
         self.label.setText(_translate('MainWindow', 'Uploaders'))
@@ -135,6 +159,7 @@ class Ui_MainWindow(object):
         self.pushButton_2.setText(_translate("MainWindow", "Open folder"))
         self.pushButton_3.setText(_translate("MainWindow", "Save logs as .txt"))
         
+        # Linking widgets and methods (callbacks)
         self.checkBox.clicked.connect(lambda: self.check_whole_show(self.checkBox.isChecked()))
         self.pushButton.clicked.connect(self.is_everything_good)
         self.pushButton_2.clicked.connect(lambda: os.startfile("DownloadedTorrents"))
@@ -145,13 +170,23 @@ class Ui_MainWindow(object):
         
         
     def check_whole_show(self, is_checked):
+        """Enable/disable widgets when checkBox is checked/unchecked
+
+        Args:
+            is_checked (bool): Is the checkBox checked/unchecked?
+        """
         if is_checked:
             self.spinBox_2.setEnabled(False)
         else:
             self.spinBox_2.setEnabled(True)
     
     
-    def show_error_popup(self, error_message):
+    def show_error_popup(self, error_message: str):
+        """Show an error popup message
+
+        Args:
+            error_message (str): Message to display with the popup
+        """
         error_message = '\n'.join(textwrap.wrap(error_message, width=100))
         msg = QMessageBox()
         msg.resize(500, 200)
@@ -161,7 +196,12 @@ class Ui_MainWindow(object):
         msg.exec_()
        
         
-    def show_info_popup(self, info_message):
+    def show_info_popup(self, info_message: str):
+        """Show an info popup message
+
+        Args:
+            info_message (str): Message to display with the popup
+        """
         msg = QMessageBox()
         msg.setTextFormat(Qt.RichText)
         msg.resize(500, 200)
@@ -169,9 +209,83 @@ class Ui_MainWindow(object):
         msg.setText(info_message)
         msg.setWindowTitle('NyaaDownloader')
         msg.exec_()
+        
+        
+    def disable_all_widgets(self):
+        """Disable all widgets in the GUI."""
+        self.lineEdit.setEnabled(False)
+        self.lineEdit_2.setEnabled(False)
+        self.comboBox.setEnabled(False)
+        self.spinBox.setEnabled(False)
+        self.spinBox_2.setEnabled(False)
+        self.checkBox.setEnabled(False)
+        self.radioButton.setEnabled(False)
+        self.radioButton_2.setEnabled(False)
+        
+    def enable_all_widgets(self):
+        """Enable all widgets in the GUI (and reset checkbox)."""
+        self.lineEdit.setEnabled(True)
+        self.lineEdit_2.setEnabled(True)
+        self.comboBox.setEnabled(True)
+        self.spinBox.setEnabled(True)
+        self.spinBox_2.setEnabled(True)
+        self.checkBox.setEnabled(True)
+        self.radioButton.setEnabled(True)
+        self.radioButton_2.setEnabled(True)
+        
+        self.checkBox.setChecked(False)
+        
+    
+    def generate_download_folder(self, anime_name: str):
+        """Generates a folder name for the .torrents download.
+
+        Args:
+            anime_name (str): Name of the anime.
+        
+        Returns:
+            path (str): Path of the folder.
+        """
+        for s in ['\\', '/', ':', '*', '?', '"', '<', '>', '|']:
+            anime_name = anime_name.replace(s, ' ')
+        
+        try:
+            os.makedirs(f'DownloadedTorrents\\{anime_name}')
+        except FileExistsError:
+            pass
+        
+        return f'DownloadedTorrents\\{anime_name}'
+    
+
+    def notify(self, message: str):
+        """Generate a windows 10 notifcation with a message
+
+        Args:
+            message (str): Message to be displayed
+        """
+        toast = Notification(
+        app_id='NyaaDownloader',
+        title='NyaaDownloader',
+        msg=message,
+        )
+        toast.set_audio(audio.Default, loop=False)
+        toast.build().show()
     
     
+    def save_logs(self):
+        """Saves the logs to a .txt file."""
+        name = QtWidgets.QFileDialog.getSaveFileName(mainWindow, "Save File", '.', '.txt')[0]
+        try:
+            # If cancel is clicked, do nothing
+            if name != '':
+                with open(f'{name}.txt', 'w') as f:
+                    f.write(self.textBrowser.toPlainText())
+        except:
+            pass
+
+
     def is_everything_good(self):
+        """Check if every input values are correct and if yes, will call the start_checking method
+        """
         everything_good = True
         
         if self.lineEdit.text() == '':
@@ -193,96 +307,85 @@ class Ui_MainWindow(object):
         except Exception as e:
             self.show_error_popup(e)
             everything_good = False
-            
+        
+        # Setting proper values
         if everything_good:
+            
+            global uploaders
+            global anime_name
+            global start_end
+            global quality
+            global option
+            global path
+            global verbal_base
+            
             uploaders = [u.strip() for u in self.lineEdit.text().strip().split(';') if u != '']
             anime_name = self.lineEdit_2.text()
             start_end = (int(self.spinBox.text()), 10000) if self.checkBox.isChecked() else (int(self.spinBox.text()), int(self.spinBox_2.text()))
             quality = int(self.comboBox.currentText()[:-1])
             option = 1 if self.radioButton.isChecked() else 2
-            # I had to put that thread because if I didn't, the app would freeze when it tried to download the torrents
-            threading.Thread(target=lambda: self.start_checking(uploaders, anime_name, start_end, quality, option)).start()
-    
-    
-    def generate_download_folder(self, anime_name):
-        """Generates a folder name for the .torrents download.
+            path = self.generate_download_folder(anime_name)
+            verbal_base = 'Downloaded' if option == 1 else 'Transfered'
 
-        Args:
-            anime_name (str): Name of the anime.
-        
-        Returns:
-            path (str): Path of the folder.
+            
+            self.start_checking()
+    
+    
+    def start_checking(self):
+        """Will setup the GUI and call the thread to handle the download/transfer of torrent.
         """
-        for s in ['\\', '/', ':', '*', '?', '"', '<', '>', '|']:
-            anime_name = anime_name.replace(s, ' ')
         
-        try:
-            os.makedirs(f'DownloadedTorrents\\{anime_name}')
-        except FileExistsError:
-            pass
-        
-        return f'DownloadedTorrents\\{anime_name}'
-    
-    
-    def disable_all_widgets(self):
-        """Disable all widgets in the GUI."""
-        self.lineEdit.setEnabled(False)
-        self.lineEdit_2.setEnabled(False)
-        self.comboBox.setEnabled(False)
-        self.spinBox.setEnabled(False)
-        self.spinBox_2.setEnabled(False)
-        self.checkBox.setEnabled(False)
-        self.radioButton.setEnabled(False)
-        self.radioButton_2.setEnabled(False)
-        
-    
-    def enable_all_widgets(self):
-        """Enable all widgets in the GUI."""
-        self.lineEdit.setEnabled(True)
-        self.lineEdit_2.setEnabled(True)
-        self.comboBox.setEnabled(True)
-        self.spinBox.setEnabled(True)
-        self.spinBox_2.setEnabled(True)
-        self.checkBox.setEnabled(True)
-        self.radioButton.setEnabled(True)
-        self.radioButton_2.setEnabled(True)
-        
-        self.checkBox.setChecked(False)
-    
-    
-    def notify(self, message):
-        toast = Notification(
-        app_id='NyaaDownloader',
-        title='NyaaDownloader',
-        msg=message,
-        )
-        toast.set_audio(audio.Default, loop=False)
-        toast.build().show()
-    
-    
-    def save_logs(self):
-        """Saves the logs to a .txt file."""
-        name = QtWidgets.QFileDialog.getSaveFileName(mainWindow, "Save File", '.', '.txt')[0]
-        try:
-            with open(f'{name}.txt', 'w') as f:
-                f.write(self.textBrowser.toPlainText())
-        # If cancel is clicked, do nothing
-        except:
-            pass
-        
-    
-    def start_checking(self, uploaders, anime_name, start_end, quality, option):
         self.disable_all_widgets()
-        
-        fails_in_a_row = 0
-        
-        unexpected_end = False
-        verbal_base = 'Downloaded' if option == 1 else 'Transfered'
         self.pushButton_2.setEnabled(True) if option == 1 else None  # A folder can now be created to store the .torrent files (only if the option is 1)
         
+        # I had to put that thread because if I didn't, the app would freeze when it tried to download the torrents (see below)
+        self.worker = WorkerThread()
+        self.worker.start()
+        
+        # Connecting events to the worker thread
+        self.worker.finished.connect(lambda: self.worker_finished(anime_name, verbal_base))
+        self.worker.update_logs.connect(self.append_to_logs) # text paramter will be passed through signal
+        self.worker.error_popup.connect(self.show_error_popup) # text paramter will be passed through signal
+        self.worker.gen_folder.connect(self.generate_download_folder) # text paramter will be passed through signal
+    
+    
+    def worker_finished(self, anime_name: str, verbal_base: str):
+        """When the thread has finished processing, enable all widgets again and notify the user
+
+        Args:
+            anime_name (str): [description]
+            verbal_base (str): [description]
+        """
+        self.notify(f"The anime {anime_name} has been fully {verbal_base.lower()}!")
+        self.pushButton_3.setEnabled(True)
+        self.enable_all_widgets()
+        
+        
+    def append_to_logs(self, text: str):
+        """Appends a text to the logs widget
+
+        Args:
+            text (str): Text to append to logs
+        """
+        self.textBrowser.append(text)
+    
+
+class WorkerThread(QThread):
+    """This class was necessary because I PyQt doesn't well supports loop (see: https://stackoverflow.com/questions/50851966/pyqt5-window-crashes-when-socket-is-continue-running-in-background#comment88740648_50864417)
+    """
+    update_logs = pyqtSignal(str)
+    error_popup = pyqtSignal(str)
+    gen_folder = pyqtSignal(str)
+
+    def run(self):
+        """The "almost main" function of that program. Will download/transfer every found torrent. Will also handle logs update, etc.
+        """
+        
+        fails_in_a_row = 0
+        unexpected_end = False
         
         # Will break if "END" found in title (Erai-raws)
-        for episode in range(start_end[0], start_end[1] + 1):  # If not handled correctly, may crash the app.
+        for episode in range(start_end[0], start_end[1] + 1):
             
             if unexpected_end:
                 break
@@ -296,22 +399,25 @@ class Ui_MainWindow(object):
                     fails_in_a_row = 0
                         
                     if option == 1:
-                        path = self.generate_download_folder(anime_name)  # In case the user tries to delete it while the program is running
-                        if nyaa.download(torrent):
+                        self.gen_folder.emit(anime_name)  # In case the user tries to delete it while the program is running
+                        if nyaa.download(torrent):  # Will download the .torrent file along the condition check
                             move(f"{torrent['name']}.torrent", f"{path}\\{torrent['name']}.torrent")
                         else:
-                            self.show_error_popup('No Internet connection available')
+                            self.error_popup.emit('No Internet connection available')
                             unexpected_end = True
                             break
                     
                     elif option == 2:
-                        nyaa.transfer(torrent)
+                        if not nyaa.transfer(torrent):  # Will transfer the torrent link along the condition check
+                            self.error_popup.emit('No bittorrent client or web browser (that supports magnet links) found.')
+                            unexpected_end = True
+                            break
                     
-                    self.textBrowser.append(f'{verbal_base}: {anime_name} - Episode {episode}')
+                    self.update_logs.emit(f'{verbal_base}: {anime_name} - Episode {episode}')
                     
                     # Erai-raws uses a special notation (they just add "END" in the torrent name when an anime has finished airing)
                     if uploader == 'Erai-raws' and torrent['name'].find(' END [') != -1:
-                        self.textBrowser.append(f'Note: {anime_name} has no more than {episode} episodes')
+                        self.update_logs.emit(f'Note: {anime_name} has no more than {episode} episodes')
                         unexpected_end = True
                     
                     # We skip the next uploaders because we don't need to check them since we found what we were looking for (lol)
@@ -319,16 +425,10 @@ class Ui_MainWindow(object):
                         
                 else:
                     if uploader == uploaders[-1]:
-                        self.textBrowser.append(f'Failed: {anime_name} - Episode {episode}')
+                        self.update_logs.emit(f'Failed: {anime_name} - Episode {episode}')
                         
                         fails_in_a_row += 1
-                
+            
             if fails_in_a_row >= 10:
-                self.textBrowser.append(f'Note: {anime_name} seems to only have {episode - 10} episodes')
+                self.update_logs.emit(f'Note: {anime_name} seems to only have {episode - 10} episodes')
                 break
-        
-        self.notify(f"The anime {anime_name} has been fully {verbal_base.lower()}!")
-        
-        self.pushButton_3.setEnabled(True)
-        self.enable_all_widgets()
-                        
