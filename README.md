@@ -39,12 +39,5 @@ I constantly try to improve this little project.<br><br>
 <h1>🐍 The script in action</h1>
 
 This quick video shows you how the script works.<br><br>
-<b>Funfact</b>: In the video, we can see that there is an issue while trying to download <i>Tokyo Revengers</i>. Well, it's fixed now and you'll see what episode couldn't be downloaded.
-Automatically stops at 10 unsuccessful tries to avoid useless checking and spamming Nyaa website.
 
-
-
-https://user-images.githubusercontent.com/52708150/131202882-9908a228-13fc-4b7b-a9bb-4700296454d0.mp4
-
-
-
+https://user-images.githubusercontent.com/52708150/131512813-20f10705-0d71-4a09-9c3d-1af3983a666b.mp4
