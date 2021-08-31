@@ -2,8 +2,10 @@
 
 
 from lib import gui
-import sys
+
 from PyQt5 import QtWidgets
+
+import sys
 
 
 # ------------------------------MAIN FUNCTION------------------------------
