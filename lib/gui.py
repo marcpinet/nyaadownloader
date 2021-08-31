@@ -24,6 +24,7 @@ quality = -1
 option = -1
 path = ''
 verbal_base = ''
+unexpected_end = False
 
 
 # ------------------------------CLASSES AND METHODS------------------------------
@@ -116,6 +117,9 @@ class Ui_MainWindow(QDialog):
         self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_3.setGeometry(QtCore.QRect(550, 370, 91, 23))
         self.pushButton_3.setObjectName("pushButton_3")
+        self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_4.setGeometry(QtCore.QRect(120, 370, 75, 23))
+        self.pushButton_4.setObjectName("pushButton_4")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -159,16 +163,27 @@ class Ui_MainWindow(QDialog):
         self.label_7.setText(_translate('MainWindow', 'Logs'))
         self.pushButton_2.setText(_translate("MainWindow", "Open folder"))
         self.pushButton_3.setText(_translate("MainWindow", "Save logs as .txt"))
+        self.pushButton_4.setText(_translate("MainWindow", "Stop"))
         
         # Linking widgets and methods (callbacks)
         self.checkBox.clicked.connect(lambda: self.check_whole_show(self.checkBox.isChecked()))
         self.pushButton.clicked.connect(self.is_everything_good)
         self.pushButton_2.clicked.connect(lambda: os.startfile("DownloadedTorrents"))
         self.pushButton_3.clicked.connect(self.save_logs)
+        self.pushButton_4.clicked.connect(self.cancel_process)
         
+        # Disabling buttons that doesn't have to be pressed atm
         self.pushButton_2.setEnabled(False)
         self.pushButton_3.setEnabled(False)
+        self.pushButton_4.setEnabled(False)
         
+    
+    def cancel_process(self):
+        """Cancel the check process by using a specific variable
+        """
+        global unexpected_end
+        unexpected_end = True
+    
         
     def check_whole_show(self, is_checked):
         """Enable/disable widgets when checkBox is checked/unchecked
@@ -213,7 +228,8 @@ class Ui_MainWindow(QDialog):
         
         
     def disable_all_widgets(self):
-        """Disable all widgets in the GUI."""
+        """Disable all widgets in the GUI.
+        """
         self.lineEdit.setEnabled(False)
         self.lineEdit_2.setEnabled(False)
         self.comboBox.setEnabled(False)
@@ -224,7 +240,8 @@ class Ui_MainWindow(QDialog):
         self.radioButton_2.setEnabled(False)
         
     def enable_all_widgets(self):
-        """Enable all widgets in the GUI (and reset checkbox)."""
+        """Enable all widgets in the GUI (and reset checkbox).
+        """
         self.lineEdit.setEnabled(True)
         self.lineEdit_2.setEnabled(True)
         self.comboBox.setEnabled(True)
@@ -235,6 +252,7 @@ class Ui_MainWindow(QDialog):
         self.radioButton_2.setEnabled(True)
         
         self.checkBox.setChecked(False)
+        self.pushButton_4.setEnabled(False)
         
     
     def generate_download_folder(self, anime_name: str):
@@ -321,7 +339,7 @@ class Ui_MainWindow(QDialog):
             global verbal_base
             
             uploaders = [u.strip() for u in self.lineEdit.text().strip().split(';') if u != '']
-            anime_name = self.lineEdit_2.text()
+            anime_name = ' '.join(self.lineEdit_2.text().strip().split())
             start_end = (int(self.spinBox.text()), 10000) if self.checkBox.isChecked() else (int(self.spinBox.text()), int(self.spinBox_2.text()))
             quality = int(self.comboBox.currentText()[:-1])
             option = 1 if self.radioButton.isChecked() else 2
@@ -337,7 +355,8 @@ class Ui_MainWindow(QDialog):
         """
         
         self.disable_all_widgets()
-        self.pushButton_2.setEnabled(True) if option == 1 else None  # A folder can now be created to store the .torrent files (only if the option is 1)
+        self.pushButton_2.setEnabled(True) if option == 1 else None  # Enabling Open folder button (only if the option is 1)
+        self.pushButton_4.setEnabled(True) # Enabling cancel button
         
         # I had to put that thread because if I didn't, the app would freeze when it tried to download the torrents (see below)
         self.worker = WorkerThread()
@@ -382,11 +401,15 @@ class WorkerThread(QThread):
         """The "almost main" function of that program. Will download/transfer every found torrent. Will also handle logs update, etc.
         """
         
+        episode = start_end[0]
         fails_in_a_row = 0
+        
+        # Call it as global (cuz the stop button uses it) and reset it to False
+        global unexpected_end
         unexpected_end = False
         
         # Will break if "END" found in title (Erai-raws)
-        for episode in range(start_end[0], start_end[1] + 1):
+        while not unexpected_end and episode <= start_end[1]:
             
             if unexpected_end:
                 break
@@ -408,6 +431,7 @@ class WorkerThread(QThread):
                             unexpected_end = True
                             break
                     
+                    # I prefer this rather than a simple else because it's cleaner
                     elif option == 2:
                         if not nyaa.transfer(torrent):  # Will transfer the torrent link along the condition check
                             self.error_popup.emit('No bittorrent client or web browser (that supports magnet links) found.')
@@ -433,3 +457,5 @@ class WorkerThread(QThread):
             if fails_in_a_row >= 10:
                 self.update_logs.emit(f'Note: {anime_name} seems to only have {episode - 10} episodes')
                 break
+                
+            episode += 1

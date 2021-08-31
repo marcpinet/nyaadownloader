@@ -59,10 +59,11 @@ def transfer(torrent: dict):
     """
     try:
         wb.open(torrent['magnet'])
-        return True
         
     except:
         return False
+    
+    return True
 
 
 def find_torrent(uploader: str, anime_name: str, episode: int, quality: int):
