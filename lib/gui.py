@@ -1,10 +1,11 @@
 # ------------------------------IMPORTS------------------------------
 
 
+from . import nyaa
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QDialog
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from . import nyaa
 from winotify import Notification, audio
 from shutil import move
 
@@ -472,5 +473,5 @@ class WorkerThread(QThread):
 
         if fails_in_a_row >= 10:
             self.update_logs.emit(
-                f"Note: {anime_name} seems to only have {episode - 10} episodes"
+                f"Note: {anime_name} seems to only have {episode - 11} episodes"
             )
