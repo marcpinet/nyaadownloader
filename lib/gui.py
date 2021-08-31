@@ -175,7 +175,7 @@ class Ui_MainWindow(QDialog):
         # Disabling buttons that doesn't have to be pressed atm
         self.pushButton_2.setEnabled(False)
         self.pushButton_3.setEnabled(False)
-        self.pushButton_4.setEnabled(False)
+        self.pushButton_4.setVisible(False)
         
     
     def cancel_process(self):
@@ -230,7 +230,6 @@ class Ui_MainWindow(QDialog):
     def set_widget_while_check(self):
         """Disable all widgets in the GUI.
         """
-        self.pushButton.setEnabled(False)
         self.lineEdit.setEnabled(False)
         self.lineEdit_2.setEnabled(False)
         self.comboBox.setEnabled(False)
@@ -239,8 +238,9 @@ class Ui_MainWindow(QDialog):
         self.checkBox.setEnabled(False)
         self.radioButton.setEnabled(False)
         self.radioButton_2.setEnabled(False)
+        
         self.pushButton_2.setEnabled(True) if option == 1 else None  # Enabling Open folder button (only if the option is 1)
-        self.pushButton_4.setEnabled(True) # Enabling Stop button
+        self.pushButton_4.setVisible(True) # Enabling Stop button
         
 
     def set_widget_after_check(self):
@@ -257,7 +257,8 @@ class Ui_MainWindow(QDialog):
         self.radioButton_2.setEnabled(True)
         
         self.checkBox.setChecked(False) # Reseting checkbox
-        self.pushButton_4.setEnabled(False) # Disabling Stop button
+        self.pushButton_4.setVisible(False) # Disabling Stop button
+        self.pushButton_3.setEnabled(True) # Enabling Save logs button
         
     
     def generate_download_folder(self, anime_name: str):
@@ -310,6 +311,8 @@ class Ui_MainWindow(QDialog):
     def is_everything_good(self):
         """Check if every input values are correct and if yes, will call the start_checking method
         """
+        self.pushButton.setEnabled(False) # Disabling check button so the user won't spam it (to avoid glitches)
+        
         everything_good = True
         
         if self.lineEdit.text() == '':
@@ -353,6 +356,9 @@ class Ui_MainWindow(QDialog):
 
             
             self.start_checking()
+        
+        else:
+            self.pushButton.setEnabled(True)
     
     
     def start_checking(self):
@@ -380,7 +386,6 @@ class Ui_MainWindow(QDialog):
             verbal_base (str): [description]
         """
         self.notify(f"The anime {anime_name} has been fully {verbal_base.lower()}!")
-        self.pushButton_3.setEnabled(True)
         self.set_widget_after_check()
         
         
