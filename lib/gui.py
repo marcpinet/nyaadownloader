@@ -227,9 +227,10 @@ class Ui_MainWindow(QDialog):
         msg.exec_()
         
         
-    def disable_all_widgets(self):
+    def set_widget_while_check(self):
         """Disable all widgets in the GUI.
         """
+        self.pushButton.setEnabled(False)
         self.lineEdit.setEnabled(False)
         self.lineEdit_2.setEnabled(False)
         self.comboBox.setEnabled(False)
@@ -238,10 +239,14 @@ class Ui_MainWindow(QDialog):
         self.checkBox.setEnabled(False)
         self.radioButton.setEnabled(False)
         self.radioButton_2.setEnabled(False)
+        self.pushButton_2.setEnabled(True) if option == 1 else None  # Enabling Open folder button (only if the option is 1)
+        self.pushButton_4.setEnabled(True) # Enabling Stop button
         
-    def enable_all_widgets(self):
+
+    def set_widget_after_check(self):
         """Enable all widgets in the GUI (and reset checkbox).
         """
+        self.pushButton.setEnabled(True)
         self.lineEdit.setEnabled(True)
         self.lineEdit_2.setEnabled(True)
         self.comboBox.setEnabled(True)
@@ -251,8 +256,8 @@ class Ui_MainWindow(QDialog):
         self.radioButton.setEnabled(True)
         self.radioButton_2.setEnabled(True)
         
-        self.checkBox.setChecked(False)
-        self.pushButton_4.setEnabled(False)
+        self.checkBox.setChecked(False) # Reseting checkbox
+        self.pushButton_4.setEnabled(False) # Disabling Stop button
         
     
     def generate_download_folder(self, anime_name: str):
@@ -354,9 +359,7 @@ class Ui_MainWindow(QDialog):
         """Will setup the GUI and call the thread to handle the download/transfer of torrent.
         """
         
-        self.disable_all_widgets()
-        self.pushButton_2.setEnabled(True) if option == 1 else None  # Enabling Open folder button (only if the option is 1)
-        self.pushButton_4.setEnabled(True) # Enabling cancel button
+        self.set_widget_while_check()
         
         # I had to put that thread because if I didn't, the app would freeze when it tried to download the torrents (see below)
         self.worker = WorkerThread()
@@ -378,7 +381,7 @@ class Ui_MainWindow(QDialog):
         """
         self.notify(f"The anime {anime_name} has been fully {verbal_base.lower()}!")
         self.pushButton_3.setEnabled(True)
-        self.enable_all_widgets()
+        self.set_widget_after_check()
         
         
     def append_to_logs(self, text: str):
