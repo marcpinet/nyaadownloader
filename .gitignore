@@ -4,14 +4,16 @@
 __pycache_/_
 lib/__pycache__/
 
-# Binary folder where the .exe is
-bin/
-
 # Generated folders/files by the program
 DownloadedTorrents/
 
 # Qt Designer UI
 pyqt-ui/
+
+# Generated folders from PyInstaller
+build/
+dist/
+main.spec
 
 # PyInstaller .bat script that allows me to create the .exe from the release
 binary_gen.bat
