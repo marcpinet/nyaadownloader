@@ -1,14 +1,18 @@
 # Auto-generated folders
-.git
-.vscode
-__pycache__
-lib/__pycache__
+.git/
+.vscode/
+__pycache_/_
+lib/__pycache__/
 
 # Binary folder where the .exe is
-bin
+bin/
 
 # Generated folders/files by the program
-DownloadedTorrents
+DownloadedTorrents/
 
-# Qt Designer UI File
-pyqt-ui
+# Qt Designer UI
+pyqt-ui/
+
+# PyInstaller .bat script that allows me to create the .exe from the release
+binary_gen.bat
+
