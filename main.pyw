@@ -10,7 +10,7 @@ from PyQt5 import QtWidgets
 
 
 def main():
-    
+
     message = """<p>Welcome to my batch downloader for Nyaa.si!<br><br><br>
     
 
@@ -36,7 +36,7 @@ def main():
 
     If you find any bug, please let me know on my GitHub:<br>
     <a href="https://github.com/marcpinet">https://github.com/marcpinet</a>.</p>"""
-    
+
     app = QtWidgets.QApplication([])
     MainWindow = QtWidgets.QMainWindow()
     ui = gui.Ui_MainWindow()
