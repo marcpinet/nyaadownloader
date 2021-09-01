@@ -45,7 +45,7 @@ I never ask for money for my open source projects. However, you can still tip me
 ### How to use without Python installed
 
 I made an executable file of this project using [pyinstaller](https://github.com/pyinstaller/pyinstaller).
-You can find the latest release [here](https://github.com/marcpinet/batch-downloader-nyaa.si/releases).
+You can find the latest release [here](https://github.com/marcpinet/batch-downloader-nyaa.si/releases/latest).
 
 ### Prerequisites
 
