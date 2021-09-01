@@ -1,7 +1,7 @@
 # Auto-generated folders
 .git/
 .vscode/
-__pycache_/_
+__pycache__/
 lib/__pycache__/
 
 # Generated folders/files by the program
