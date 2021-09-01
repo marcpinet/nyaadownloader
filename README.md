@@ -1,43 +1,102 @@
-<h1>❓ How it Works </h1>
-Formerly console-based, NyaaDownloader is a lightweight and user-friendly tool with a Graphical User Interface that allows to you to downlod many .torrent (or transfer magnets) at a time. <br><br>
-The search engine is based on <a href="https://nyaa.si/" target=_blank>Nyaa.si</a> one and the way the script looks for episode is constantly improved to avoid errors and differenciate the way uploaders name their torrents.<br><br>
-If you want to add or remove a provider (uploader) like <a href=https://beta.erai-raws.info><i>Erai-Raws</i></a> or <a href=https://subsplease.org><i>SubsPlease</i></a> etc., well... you can, directly in the GUI.<br>
-Since they are the only two uploaders that are mainly active and trusted by <a href="https://nyaa.si/" target=_blank>Nyaa.si</a>, I decided to only put those two. Feel free to add any other uploader you trust (and remove the ones that you're not interested in).<br><br>
-The program have been made so that the user <b>won't make any mistake</b> in the input and will be warned if the anime title he wrote exists.<br><br>
-You specify the anime name, the episode where you want to start downloading, and then the last episode (or you can choose to download the whole show).<br> You can also select the quality and download multiple anime at a time.<br><br>
-Most importantly, you can choose whether you want to download them as a .torrent or if you only want to open them in your torrent client by using magnet links.<br><br>
-During the process, logs will appear at the right of the GUI. You'll be able to save them as .txt file.<br>
-Downloaded .torrent files will be sorted into their respective folders.<br><br>
-It's really fast, even if the code can probably be improved (be indulgent, I'm still a beginner).<br>
-Every downloaded torrent will be stored in a folder (names wil be the anime names) in the same folder as the script under the name `DownloadedTorrents`.<br><br>
-By the way, Nyaa website won't think you're trying to DDoS it with a lot of requests, there is a short delay between each requets that avoids IP Blocking.<br><br>
+# NyaaDownloader
 
-<h1>📌 Requirements (only if you use the Python script)</h1>
+🚀 Download many .torrent from Nyaa.si at a time! 🚀
 
-You need to be on a Windows 10 machine, of course.<br>
-You'll also need a BitTorrent client to open .torrent files and magnet links.<br><br>
-With the command `pip install <library>` you'll need to install the following ones :
-  
-  • NyaaPy<br>
-  • winotify<br>
-  • requests<br>
-  • PyQt5<br>
-  
-To install them in one command, just download the `requirements.txt` and `cd <path>` with the cmd to where the file is located. Then run the following command: `pip install -r requirements.txt` and it should be done! Python version: `3.9.1` but should works with any `3.0+` version.<br><br>
-Then, run `main.pyw` and done!<br><br>
+🔌 Instantly transfer them into your Bittorrent client 🔌
 
-<h1>💻 "I don't have Python on my PC, what should I do?"</h1>
-Don't worry mate, I created a .exe file which can be executed on any Windows 10 machine.<br>Just go <a href="https://github.com/marcpinet/batch-downloader-nyaa.si/releases" target=_blank>here</a> and download the latest version of NyaaDownloader by clicking on it (above `Source Code.zip`).<br><br>Carefully read the <b>Note</b> section if you've got any problem with it.<br><br>
+🔎 Automatically search the closest title to ensure an accurate result 🔎
 
-<h1>⚙️ Work in progress</h1>
+📦 Exists as an all-in-one executable file, so you can skip the prerequisites 📦
 
-I will add more features when it will come to my mind.<br>
-Feel free to contribute to this project by posting your suggestions in the <b>Issue</b> section.<br>
-I constantly try to improve this little project.<br><br>
+🧾 ... and many more features! 🧾
 
+## Features
 
-<h1>🐍 The script in action</h1>
+* Integrated Graphical User Interface (GUI) 🖥
+* Enter uploaders name (defaults are Erai-raws and Subsplease) 🤖
+* Enter the anime title you want to download ✏️
+* Choose the quality 🎞
+* Retreive them either as .torrent or directly transfer them into your Bittorrent client ⚙️
+* Logging system (you can save them into a text file) 📝
+* Downloaded anime are sorted and stored into their respective folders 📁
+* Get warned whether the anime title you entered exists in Nyaa database or not ⚠️
 
-This quick video shows you how the script works.<br><br>
+## Demo
 
 https://user-images.githubusercontent.com/52708150/131512813-20f10705-0d71-4a09-9c3d-1af3983a666b.mp4
+
+## Getting Started
+
+This script is being controlled through a user interface. 
+For beginners, that is why the main is a `.pyw` rather than a `.py` one.
+
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+
+### Support 👨‍💻
+
+Any problems with running the script and any questions please create a new issue [here](https://github.com/marcpinet/batch-downloader-nyaa.si/issues/new?assignees=&labels=&template=bug_report.md&title=).
+
+You can also contribute to this project by requesting new features [here](https://github.com/marcpinet/batch-downloader-nyaa.si/issues/new?assignees=&labels=&template=feature_request.md&title=).
+
+I never ask for money for my open source projects. However, you can still tip me if you want.
+
+<a href="https://www.buymeacoffee.com/marcpinet" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+
+### How to use without Python installed
+
+I made an executable file of this project using [pyinstaller](https://github.com/pyinstaller/pyinstaller).
+You can find the latest release [here](https://github.com/marcpinet/batch-downloader-nyaa.si/releases).
+
+### Prerequisites
+
+* Python 3.9+ (3.0+ might work)
+
+#### Before we get started
+
+You will need to have a web browser that supports magnet link and also a bittorrent client.
+
+Get a copy of the Project. Assuming you have git installed, open your Terminal and enter:
+
+```
+git clone https://github.com/marcpinet/batch-downloader-nyaa.si.git
+```
+
+To install all needed requirements run the following command in the project directory:
+
+```
+pip install -r requirements.txt
+```
+
+After that you can proceed to start the script by running `main.pyw`.
+
+## Running 🏃
+
+To run this script open your Terminal in the project directory.
+
+To start the script, enter:
+
+```
+pythonw main.pyw
+```
+
+You can then close the Terminal.
+
+## Authors
+
+* **Marc Pinet** - *Initial work* - [marcpinet](https://github.com/marcpinet)
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+
+## Acknowledgments
+
+* Hat tip to anyone whose code was used
+
+## To Do List 📝
+
+You can find what I plan to do for the project [here](https://github.com/marcpinet/batch-downloader-nyaa.si/projects).
+Also, you can find what I aleady implemented [here](https://github.com/marcpinet/batch-downloader-nyaa.si/projects?query=is%3Aclosed).
+
+
+
