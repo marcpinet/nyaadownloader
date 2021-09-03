@@ -6,7 +6,6 @@ from lib import gui
 from PyQt5 import QtWidgets, QtGui
 
 import sys
-import ctypes
 
 
 # ------------------------------MAIN FUNCTION------------------------------
