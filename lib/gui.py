@@ -4,13 +4,20 @@
 from . import nyaa
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QDialog
+from PyQt5.QtWidgets import QMessageBox, QDialog, QInputDialog, QLineEdit
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from winotify import Notification, audio
 from shutil import move
 
 import textwrap
 import os
+import webbrowser as wb
+
+
+# ------------------------------GLOBAL VARIABLES------------------------------
+
+
+unhandled_characters = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"]
 
 
 # ------------------------------CLASSES AND METHODS------------------------------
@@ -26,7 +33,7 @@ class Ui_MainWindow(QDialog):
         """
 
         MainWindow.setObjectName("NyaaDownloader")
-        MainWindow.setWindowIcon(QtGui.QIcon("ico/nyaa.ico"))
+        MainWindow.setWindowIcon(QtGui.QIcon("ico\\nyaa.ico"))
         MainWindow.resize(800, 440)
         MainWindow.setMinimumSize(QtCore.QSize(800, 440))
         MainWindow.setMaximumSize(QtCore.QSize(800, 440))
@@ -42,7 +49,7 @@ class Ui_MainWindow(QDialog):
         self.lineEdit.setGeometry(QtCore.QRect(30, 50, 291, 20))
         self.lineEdit.setObjectName("lineEdit")
         self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(30, 100, 51, 16))
+        self.label_2.setGeometry(QtCore.QRect(30, 100, 61, 16))
         self.label_2.setObjectName("label_2")
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
         self.lineEdit_2.setGeometry(QtCore.QRect(30, 120, 291, 20))
@@ -112,10 +119,18 @@ class Ui_MainWindow(QDialog):
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
         self.menubar.setObjectName("menubar")
+        self.menuTranslator = QtWidgets.QMenu(self.menubar)
+        self.menuTranslator.setObjectName("menuTranslator")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+        self.actionGet_translation_of_an_anime_title = QtWidgets.QAction(MainWindow)
+        self.actionGet_translation_of_an_anime_title.setObjectName(
+            "actionGet_translation_of_an_anime_title"
+        )
+        self.menuTranslator.addAction(self.actionGet_translation_of_an_anime_title)
+        self.menubar.addAction(self.menuTranslator.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -130,23 +145,22 @@ class Ui_MainWindow(QDialog):
         Args:
             MainWindow (QMainWindow): Main window of the GUI
         """
-
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "NyaaDownloader"))
-        self.label.setText(_translate("MainWindow", "Uploaders"))
+        self.label.setText(_translate("MainWindow", "Uploaders:"))
         self.lineEdit.setText(_translate("MainWindow", "Erai-raws;SubsPlease"))
         self.lineEdit.setPlaceholderText(
             _translate(
                 "MainWindow", "Separate them with semicolon (e.g Erai-raws;SubsPlease)"
             )
         )
-        self.label_2.setText(_translate("MainWindow", "Anime Title"))
+        self.label_2.setText(_translate("MainWindow", "Anime Title:"))
         self.lineEdit_2.setPlaceholderText(
             _translate("MainWindow", "Input your anime title here")
         )
-        self.label_3.setText(_translate("MainWindow", "Starting from..."))
-        self.label_4.setText(_translate("MainWindow", "Until episode..."))
-        self.label_5.setText(_translate("MainWindow", "Quality"))
+        self.label_3.setText(_translate("MainWindow", "Starting from:"))
+        self.label_4.setText(_translate("MainWindow", "Until episode:"))
+        self.label_5.setText(_translate("MainWindow", "Quality:"))
         self.comboBox.setItemText(0, _translate("MainWindow", "1080p"))
         self.comboBox.setItemText(1, _translate("MainWindow", "720p"))
         self.comboBox.setItemText(2, _translate("MainWindow", "480p"))
@@ -160,24 +174,39 @@ class Ui_MainWindow(QDialog):
         self.radioButton_2.setText(_translate("MainWindow", "Magnet"))
         self.checkBox.setText(_translate("MainWindow", "Until last released one"))
         self.pushButton.setText(_translate("MainWindow", "Check"))
-        self.label_7.setText(_translate("MainWindow", "Logs"))
+        self.label_7.setText(_translate("MainWindow", "Logs:"))
         self.pushButton_2.setText(_translate("MainWindow", "Open folder"))
         self.pushButton_3.setText(_translate("MainWindow", "Save logs as .txt"))
         self.pushButton_4.setText(_translate("MainWindow", "Stop"))
+        self.menuTranslator.setTitle(_translate("MainWindow", "Translator"))
+        self.actionGet_translation_of_an_anime_title.setText(
+            _translate("MainWindow", "Get translation of an anime title")
+        )
 
         # Linking widgets and methods (callbacks)
         self.checkBox.clicked.connect(
             lambda: self.check_whole_show(self.checkBox.isChecked())
         )
         self.pushButton.clicked.connect(self.is_everything_good)
-        self.pushButton_2.clicked.connect(lambda: os.startfile("DownloadedTorrents"))
+        self.pushButton_2.clicked.connect(self.open_download_folder)
         self.pushButton_3.clicked.connect(self.save_logs)
         self.pushButton_4.clicked.connect(self.cancel_process)
+        self.actionGet_translation_of_an_anime_title.triggered.connect(
+            self.ask_anime_to_translate
+        )
 
         # Disabling buttons that doesn't have to be pressed atm
         self.pushButton_2.setEnabled(False)
         self.pushButton_3.setEnabled(False)
         self.pushButton_4.setVisible(False)
+
+    def ask_anime_to_translate(self):
+        """Asking anime title to translate by opening a link to MyAnimeList"""
+        text, okPressed = QInputDialog.getText(
+            self, "Title Translator", "Anime Title:", QLineEdit.Normal, ""
+        )
+        if okPressed and text != "":
+            wb.open(f"https://myanimelist.net/anime.php?q={text}&cat=anime")
 
     def cancel_process(self):
         """Cancel the check process by using a specific variable"""
@@ -210,6 +239,7 @@ class Ui_MainWindow(QDialog):
         msg.setIcon(QMessageBox.Critical)
         msg.setText(error_message)
         msg.setWindowTitle("NyaaDownloader")
+        msg.setWindowIcon(QtGui.QIcon("ico\\nyaa.ico"))
         msg.exec_()
 
     def show_info_popup(self, info_message: str):
@@ -225,11 +255,13 @@ class Ui_MainWindow(QDialog):
         msg.setIcon(QMessageBox.Information)
         msg.setText(info_message)
         msg.setWindowTitle("NyaaDownloader")
+        msg.setWindowIcon(QtGui.QIcon("ico\\nyaa.ico"))
         msg.exec_()
 
     def set_widget_while_check(self):
         """Disable all widgets in the GUI."""
 
+        self.menubar.setEnabled(False)
         self.lineEdit.setEnabled(False)
         self.lineEdit_2.setEnabled(False)
         self.comboBox.setEnabled(False)
@@ -238,13 +270,14 @@ class Ui_MainWindow(QDialog):
         self.checkBox.setEnabled(False)
         self.radioButton.setEnabled(False)
         self.radioButton_2.setEnabled(False)
+        self.pushButton_3.setEnabled(False)
 
-        self.pushButton_2.setEnabled(True) if option == 1 else None
         self.pushButton_4.setVisible(True)
 
     def set_widget_after_check(self):
         """Enable all widgets in the GUI (and reset checkbox)."""
 
+        self.menubar.setEnabled(True)
         self.pushButton.setEnabled(True)
         self.lineEdit.setEnabled(True)
         self.lineEdit_2.setEnabled(True)
@@ -256,6 +289,7 @@ class Ui_MainWindow(QDialog):
         self.radioButton_2.setEnabled(True)
 
         self.checkBox.setChecked(False)  # Reseting checkbox
+        self.pushButton_2.setEnabled(True)  # Enabling Open Folder button
         self.pushButton_4.setVisible(False)  # Disabling Stop button
         self.pushButton_3.setEnabled(True)  # Enabling Save logs button
 
@@ -264,13 +298,10 @@ class Ui_MainWindow(QDialog):
 
         Args:
             anime_name (str): Name of the anime.
-
-        Returns:
-            path (str): Path of the folder.
         """
 
-        for s in ["\\", "/", ":", "*", "?", '"', "<", ">", "|"]:
-            anime_name = anime_name.replace(s, " ")
+        for s in unhandled_characters:
+            anime_name = anime_name.replace(s, "")
 
         try:
             os.makedirs(f"DownloadedTorrents\\{anime_name}")
@@ -278,7 +309,13 @@ class Ui_MainWindow(QDialog):
         except FileExistsError:
             pass
 
-        return f"DownloadedTorrents\\{anime_name}"
+    def open_download_folder(self):
+        """Open the DownloadedTorrents folder"""
+        try:
+            os.startfile(f"{os.getcwd()}\DownloadedTorrents")
+
+        except:
+            self.show_error_popup("DownloadedTorrents folder not found")
 
     def notify(self, message: str):
         """Generate a windows 10 notifcation with a message
@@ -341,7 +378,7 @@ class Ui_MainWindow(QDialog):
         # Setting proper values
         if everything_good:
 
-            global uploaders, anime_name, start_end, quality, option, path, verbal_base
+            global uploaders, anime_name, start_end, quality, option, path
 
             uploaders = [
                 u.strip() for u in self.lineEdit.text().strip().split(";") if u != ""
@@ -354,8 +391,12 @@ class Ui_MainWindow(QDialog):
             )
             quality = int(self.comboBox.currentText()[:-1])
             option = 1 if self.radioButton.isChecked() else 2
-            path = self.generate_download_folder(anime_name)
-            verbal_base = "Downloaded" if option == 1 else "Transfered"
+
+            folder_name = anime_name
+            for c in unhandled_characters:
+                folder_name = folder_name.replace(c, "")
+
+            path = f"DownloadedTorrents\\{folder_name}"
             self.start_checking()
 
         else:
@@ -371,14 +412,12 @@ class Ui_MainWindow(QDialog):
         self.worker.start()
 
         # Connecting events to the worker thread
-        self.worker.finished.connect(
-            lambda: self.worker_finished(anime_name, verbal_base)
-        )
+        self.worker.finished.connect(lambda: self.worker_finished())
         self.worker.update_logs.connect(self.append_to_logs)
         self.worker.error_popup.connect(self.show_error_popup)
         self.worker.gen_folder.connect(self.generate_download_folder)
 
-    def worker_finished(self, anime_name: str, verbal_base: str):
+    def worker_finished(self):
         """When the thread has finished processing, enable all widgets again and notify the user
 
         Args:
@@ -386,7 +425,7 @@ class Ui_MainWindow(QDialog):
             verbal_base (str): [description]
         """
 
-        self.notify(f"The anime {anime_name} has been fully {verbal_base.lower()}!")
+        self.notify(f"The anime {anime_name} has been fully checked!")
         self.set_widget_after_check()
 
     def append_to_logs(self, text: str):
@@ -425,9 +464,9 @@ class WorkerThread(QThread):
                     fails_in_a_row = 0
 
                     if option == 1:
-                        self.gen_folder.emit(anime_name)
 
                         if nyaa.download(torrent):
+                            self.gen_folder.emit(anime_name)
                             move(
                                 f"{torrent['name']}.torrent",
                                 f"{path}\\{torrent['name']}.torrent",
@@ -447,9 +486,7 @@ class WorkerThread(QThread):
                             unexpected_end = True
                             break
 
-                    self.update_logs.emit(
-                        f"{verbal_base}: {anime_name} - Episode {episode}"
-                    )
+                    self.update_logs.emit(f"Found: {anime_name} - Episode {episode}")
 
                     # Erai-raws add "END" in the torrent name when an anime has finished airing
                     if uploader == "Erai-raws" and torrent["name"].find(" END [") != -1:
