@@ -3,9 +3,10 @@
 
 from lib import gui
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui
 
 import sys
+import ctypes
 
 
 # ------------------------------MAIN FUNCTION------------------------------
@@ -40,6 +41,7 @@ def main():
     <a href="https://github.com/marcpinet">https://github.com/marcpinet</a>.</p>"""
 
     app = QtWidgets.QApplication([])
+    app.setApplicationName("NyaaDownloader")
     MainWindow = QtWidgets.QMainWindow()
     ui = gui.Ui_MainWindow()
     ui.setupUi(MainWindow)
