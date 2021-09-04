@@ -11,7 +11,7 @@ import sys
 # ------------------------------MAIN FUNCTION------------------------------
 
 
-def main():
+def main() -> None:
 
     message = """<p>Welcome to my batch downloader for Nyaa.si!<br><br><br>
     
