@@ -9,7 +9,7 @@ import webbrowser as wb
 # ------------------------------FUNCTIONS------------------------------
 
 
-def is_in_database(anime_name: str):
+def is_in_database(anime_name: str) -> bool:
     """Check if anime exists in Nyaa database
     Args:
         anime_name (str): Name of the anime to check.
@@ -35,7 +35,7 @@ def is_in_database(anime_name: str):
     return True
 
 
-def download(torrent: dict):
+def download(torrent: dict) -> bool:
     """Download a nyaa.si torrent from the web (also retrives its original name)
 
     Args:
@@ -56,7 +56,7 @@ def download(torrent: dict):
     return True
 
 
-def transfer(torrent: dict):
+def transfer(torrent: dict) -> bool:
     """Open the user's torrent client and transfers the file to it.
     Args:
         torrent (dict): The dictionary returned by the NyaaPy.search() method.
@@ -73,7 +73,7 @@ def transfer(torrent: dict):
     return True
 
 
-def find_torrent(uploader: str, anime_name: str, episode: int, quality: int):
+def find_torrent(uploader: str, anime_name: str, episode: int, quality: int) -> dict:
     """Find if the torrent is already in the database. If not, download it.
     Args:
         uploader (str): The name of the uploader.

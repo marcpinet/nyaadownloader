@@ -25,7 +25,7 @@ unhandled_characters = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"]
 
 # Generated with Qt Designer (first time using this one)
 class Ui_MainWindow(QDialog):
-    def setupUi(self, MainWindow):
+    def setupUi(self, MainWindow) -> None:
         """Build skeleton of the GUI
 
         Args:
@@ -139,7 +139,7 @@ class Ui_MainWindow(QDialog):
         global mainWindow
         mainWindow = MainWindow
 
-    def retranslateUi(self, MainWindow):
+    def retranslateUi(self, MainWindow) -> None:
         """Setting properties and text of widgets
 
         Args:
@@ -200,7 +200,7 @@ class Ui_MainWindow(QDialog):
         self.pushButton_3.setEnabled(False)
         self.pushButton_4.setVisible(False)
 
-    def ask_anime_to_translate(self):
+    def ask_anime_to_translate(self) -> None:
         """Asking anime title to translate by opening a link to MyAnimeList"""
         text, okPressed = QInputDialog.getText(
             self, "Title Translator", "Anime Title:", QLineEdit.Normal, ""
@@ -208,13 +208,13 @@ class Ui_MainWindow(QDialog):
         if okPressed and text != "":
             wb.open(f"https://myanimelist.net/anime.php?q={text}&cat=anime")
 
-    def cancel_process(self):
+    def cancel_process(self) -> None:
         """Cancel the check process by using a specific variable"""
 
         global unexpected_end
         unexpected_end = True
 
-    def check_whole_show(self, is_checked):
+    def check_whole_show(self, is_checked) -> None:
         """Enable/disable widgets when checkBox is checked/unchecked
 
         Args:
@@ -226,7 +226,7 @@ class Ui_MainWindow(QDialog):
         else:
             self.spinBox_2.setEnabled(True)
 
-    def show_error_popup(self, error_message: str):
+    def show_error_popup(self, error_message: str) -> None:
         """Show an error popup message
 
         Args:
@@ -258,7 +258,7 @@ class Ui_MainWindow(QDialog):
         msg.setWindowIcon(QtGui.QIcon("ico\\nyaa.ico"))
         msg.exec_()
 
-    def set_widget_while_check(self):
+    def set_widget_while_check(self) -> None:
         """Disable all widgets in the GUI."""
 
         self.menubar.setEnabled(False)
@@ -274,7 +274,7 @@ class Ui_MainWindow(QDialog):
 
         self.pushButton_4.setVisible(True)
 
-    def set_widget_after_check(self):
+    def set_widget_after_check(self) -> None:
         """Enable all widgets in the GUI (and reset checkbox)."""
 
         self.menubar.setEnabled(True)
@@ -293,7 +293,7 @@ class Ui_MainWindow(QDialog):
         self.pushButton_4.setVisible(False)  # Disabling Stop button
         self.pushButton_3.setEnabled(True)  # Enabling Save logs button
 
-    def generate_download_folder(self, anime_name: str):
+    def generate_download_folder(self, anime_name: str) -> None:
         """Generates a folder name for the .torrents download.
 
         Args:
@@ -309,7 +309,7 @@ class Ui_MainWindow(QDialog):
         except FileExistsError:
             pass
 
-    def open_download_folder(self):
+    def open_download_folder(self) -> None:
         """Open the DownloadedTorrents folder"""
         try:
             os.startfile(f"{os.getcwd()}\DownloadedTorrents")
@@ -317,7 +317,7 @@ class Ui_MainWindow(QDialog):
         except:
             self.show_error_popup("DownloadedTorrents folder not found")
 
-    def notify(self, message: str):
+    def notify(self, message: str) -> None:
         """Generate a windows 10 notifcation with a message
 
         Args:
@@ -332,7 +332,7 @@ class Ui_MainWindow(QDialog):
         toast.set_audio(audio.Default, loop=False)
         toast.build().show()
 
-    def save_logs(self):
+    def save_logs(self) -> None:
         """Saves the logs to a .txt file."""
 
         name = QtWidgets.QFileDialog.getSaveFileName(
@@ -346,7 +346,7 @@ class Ui_MainWindow(QDialog):
         except:
             pass
 
-    def is_everything_good(self):
+    def is_everything_good(self) -> None:
         """Check if every input values are correct and if yes, will call the start_checking method"""
 
         everything_good = True
@@ -402,7 +402,7 @@ class Ui_MainWindow(QDialog):
         else:
             self.pushButton.setEnabled(True)
 
-    def start_checking(self):
+    def start_checking(self) -> None:
         """Will setup the GUI and call the thread to handle the download/transfer of torrent."""
 
         self.set_widget_while_check()
@@ -417,7 +417,7 @@ class Ui_MainWindow(QDialog):
         self.worker.error_popup.connect(self.show_error_popup)
         self.worker.gen_folder.connect(self.generate_download_folder)
 
-    def worker_finished(self):
+    def worker_finished(self) -> None:
         """When the thread has finished processing, enable all widgets again and notify the user
 
         Args:
@@ -428,7 +428,7 @@ class Ui_MainWindow(QDialog):
         self.notify(f"The anime {anime_name} has been fully checked!")
         self.set_widget_after_check()
 
-    def append_to_logs(self, text: str):
+    def append_to_logs(self, text: str) -> None:
         """Appends a text to the logs widget
 
         Args:
@@ -445,7 +445,7 @@ class WorkerThread(QThread):
     error_popup = pyqtSignal(str)
     gen_folder = pyqtSignal(str)
 
-    def run(self):
+    def run(self) -> None:
         """The "almost main" function of that program. Will download/transfer every found torrent. Will also handle logs update, etc."""
 
         episode = start_end[0]
