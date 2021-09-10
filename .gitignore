@@ -7,9 +7,6 @@ lib/__pycache__/
 # Generated folders/files by the program
 DownloadedTorrents/
 
-# Qt Designer UI
-pyqt-ui/
-
 # Generated folders from PyInstaller
 build/
 dist/
