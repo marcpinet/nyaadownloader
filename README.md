@@ -41,8 +41,7 @@ Any problems with running the script and any questions please create a new issue
 You can also contribute to this project by requesting new features [here](https://github.com/marcpinet/batch-downloader-nyaa.si/issues/new?assignees=&labels=&template=feature_request.md&title=).
 
 I never ask for money for my open source projects. However, you can still tip me if you want.
-
-<a href="https://www.buymeacoffee.com/marcpinet" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+I am a [Brave Verified Creator](https://i.imgur.com/fOUfdM5.png)!
 
 ### How to use without Python installed
 
