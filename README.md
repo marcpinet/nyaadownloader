@@ -58,17 +58,15 @@ You will need to have a web browser that supports magnet link and also a bittorr
 
 Get a copy of the Project. Assuming you have git installed, open your Terminal and enter:
 
-```
-git clone https://github.com/marcpinet/batch-downloader-nyaa.si.git
+```bash
+git clone 'https://github.com/marcpinet/batch-downloader-nyaa.si.git'
 ```
 
 To install all needed requirements run the following command in the project directory:
 
-```
+```bash
 pip install -r requirements.txt
 ```
-
-After that you can proceed to start the script by running `main.pyw`.
 
 ## Running 🏃
 
@@ -76,7 +74,7 @@ To run this script open your Terminal in the project directory.
 
 To start the script, enter:
 
-```
+```bash
 pythonw main.pyw
 ```
 
@@ -100,7 +98,7 @@ However, they don't always name them like that. For instance, it can be named *J
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
+This project is licensed under the GNU General Public License v3.0 - see the [LICENSE.md](LICENSE.md) file for details
 
 ## Acknowledgments
 
