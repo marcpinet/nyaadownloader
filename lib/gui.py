@@ -18,6 +18,7 @@ import webbrowser as wb
 
 
 unhandled_characters = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"]
+ICON_PATH = "ico\\nyaa.ico"
 
 
 # ------------------------------CLASSES AND METHODS------------------------------
@@ -33,7 +34,7 @@ class Ui_MainWindow(QDialog):
         """
 
         MainWindow.setObjectName("NyaaDownloader")
-        MainWindow.setWindowIcon(QtGui.QIcon("ico\\nyaa.ico"))
+        MainWindow.setWindowIcon(QtGui.QIcon(ICON_PATH))
         MainWindow.resize(800, 440)
         MainWindow.setMinimumSize(QtCore.QSize(800, 440))
         MainWindow.setMaximumSize(QtCore.QSize(800, 440))
@@ -239,7 +240,7 @@ class Ui_MainWindow(QDialog):
         msg.setIcon(QMessageBox.Critical)
         msg.setText(error_message)
         msg.setWindowTitle("NyaaDownloader")
-        msg.setWindowIcon(QtGui.QIcon("ico\\nyaa.ico"))
+        msg.setWindowIcon(QtGui.QIcon(ICON_PATH))
         msg.exec_()
 
     def show_info_popup(self, info_message: str):
@@ -255,7 +256,7 @@ class Ui_MainWindow(QDialog):
         msg.setIcon(QMessageBox.Information)
         msg.setText(info_message)
         msg.setWindowTitle("NyaaDownloader")
-        msg.setWindowIcon(QtGui.QIcon("ico\\nyaa.ico"))
+        msg.setWindowIcon(QtGui.QIcon(ICON_PATH))
         msg.exec_()
 
     def set_widget_while_check(self) -> None:
@@ -314,8 +315,8 @@ class Ui_MainWindow(QDialog):
         try:
             os.startfile(f"{os.getcwd()}\DownloadedTorrents")
 
-        except:
-            self.show_error_popup("DownloadedTorrents folder not found")
+        except Exception as e:
+            self.show_error_popup("DownloadedTorrents folder not found because: " + str(e))
 
     def notify(self, message: str) -> None:
         """Generate a windows 10 notifcation with a message
@@ -343,7 +344,7 @@ class Ui_MainWindow(QDialog):
             if name != "":
                 with open(f"{name}.txt", "w") as f:
                     f.write(self.textBrowser.toPlainText())
-        except:
+        except Exception:
             pass
 
     def is_everything_good(self) -> None:
@@ -478,13 +479,12 @@ class WorkerThread(QThread):
                             break
 
                     # I prefer this rather than a simple else because it's cleaner
-                    elif option == 2:
-                        if not nyaa.transfer(torrent):
-                            self.error_popup.emit(
-                                "No bittorrent client or web browser (that supports magnet links) found."
-                            )
-                            unexpected_end = True
-                            break
+                    elif option == 2 and not nyaa.transfer(torrent):
+                        self.error_popup.emit(
+                            "No bittorrent client or web browser (that supports magnet links) found."
+                        )
+                        unexpected_end = True
+                        break
 
                     self.update_logs.emit(f"Found: {anime_name} - Episode {episode}")
 
