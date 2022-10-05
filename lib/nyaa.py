@@ -24,7 +24,7 @@ def is_in_database(anime_name: str) -> bool:
         if (
             len(
                 NyaaPy.Nyaa.search(
-                    keyword=anime_name, category=1, subcategory=2, filters=2
+                    keyword=anime_name, category=1, subcategory=2, filters=0
                 )
             )
             == 0
@@ -73,7 +73,7 @@ def transfer(torrent: dict) -> bool:
     return True
 
 
-def find_torrent(uploader: str, anime_name: str, episode: int, quality: int) -> dict:
+def find_torrent(uploader: str, anime_name: str, episode: int, quality: int, untrusted_option: bool) -> dict:
     """Find if the torrent is already in the database. If not, download it.
     Args:
         uploader (str): The name of the uploader.
@@ -95,8 +95,14 @@ def find_torrent(uploader: str, anime_name: str, episode: int, quality: int) -> 
         keyword=f"[{uploader}] {anime_name} - {episode} [{quality}p]",
         category=1,
         subcategory=2,
-        filters=2,
+        filters=0 if untrusted_option else 2,
+    ) + NyaaPy.Nyaa.search(
+        keyword=f"[{uploader}] {anime_name} - {episode} ({quality}p)",
+        category=1,
+        subcategory=2,
+        filters=0 if untrusted_option else 2,
     )
+    
     try:
         # We take the very closest title to what we are looking for.
         torrent = None
@@ -122,6 +128,6 @@ def find_torrent(uploader: str, anime_name: str, episode: int, quality: int) -> 
     # The only exception possible is that no torrent have been found when NyaaPy.Nyaa.search()
     # (we are doing dict operations on a None object => raise an exception)
     except:
-        return None
+        return {}
 
     return torrent

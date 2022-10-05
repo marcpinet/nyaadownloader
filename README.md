@@ -18,7 +18,7 @@
 * Enter uploaders name (defaults are [Erai-raws](https://www.erai-raws.info/) and [Subsplease](https://subsplease.org/)) 🤖
 * Enter the anime title you want to download ✏️
 * Choose the quality 🎞
-* Retreive them either as .torrent or directly transfer them into your Bittorrent client ⚙️
+* Retrieve them either as .torrent or directly transfer them into your Bittorrent client ⚙️
 * Logging system (you can save them into a text file) 📝
 * Downloaded anime are sorted and stored into their respective folders 📁
 * Get warned whether the anime title you entered exists in Nyaa database or not ⚠️
@@ -81,6 +81,8 @@ pythonw main.pyw
 You can then close the Terminal.
 
 ## Tips and tricks
+
+Don't forget to separate your uploaders with a ; (semicolon) if you want to download from multiple uploaders. Else, leave empty. If you leave empty, I also recommend you to enable untrusted uploaders to maximize results.
 
 If you failed many times checking for an anime you like, you can try to find his full translated name from [MyAnimeList](https://myanimelist.net) as shown below.
 

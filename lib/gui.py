@@ -116,6 +116,9 @@ class Ui_MainWindow(QDialog):
         self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
         self.pushButton_4.setGeometry(QtCore.QRect(120, 370, 75, 23))
         self.pushButton_4.setObjectName("pushButton_4")
+        self.checkBox_2 = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBox_2.setGeometry(QtCore.QRect(340, 50, 101, 17))
+        self.checkBox_2.setObjectName("checkBox_2")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
@@ -149,10 +152,9 @@ class Ui_MainWindow(QDialog):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "NyaaDownloader"))
         self.label.setText(_translate("MainWindow", "Uploaders:"))
-        self.lineEdit.setText(_translate("MainWindow", "Erai-raws;SubsPlease"))
         self.lineEdit.setPlaceholderText(
             _translate(
-                "MainWindow", "Separate them with semicolon (e.g Erai-raws;SubsPlease)"
+                "MainWindow", "Empty=all, else use semicolon like Erai-raws;SubsPlease"
             )
         )
         self.label_2.setText(_translate("MainWindow", "Anime Title:"))
@@ -179,6 +181,7 @@ class Ui_MainWindow(QDialog):
         self.pushButton_2.setText(_translate("MainWindow", "Open folder"))
         self.pushButton_3.setText(_translate("MainWindow", "Save logs as .txt"))
         self.pushButton_4.setText(_translate("MainWindow", "Stop"))
+        self.checkBox_2.setText(_translate("MainWindow", "Allow untrusted"))
         self.menuTranslator.setTitle(_translate("MainWindow", "Translator"))
         self.actionGet_translation_of_an_anime_title.setText(
             _translate("MainWindow", "Get translation of an anime title")
@@ -353,10 +356,6 @@ class Ui_MainWindow(QDialog):
         everything_good = True
         self.pushButton.setEnabled(False)
 
-        if self.lineEdit.text() == "":
-            self.show_error_popup("You need to input at least 1 uploader name.")
-            everything_good = False
-
         if self.lineEdit_2.text() == "":
             self.show_error_popup("You need to input your anime title.")
             everything_good = False
@@ -379,11 +378,15 @@ class Ui_MainWindow(QDialog):
         # Setting proper values
         if everything_good:
 
-            global uploaders, anime_name, start_end, quality, option, path
+            global uploaders, anime_name, start_end, quality, option, untrusted_option, path
 
             uploaders = [
                 u.strip() for u in self.lineEdit.text().strip().split(";") if u != ""
             ]
+            
+            if not uploaders:
+                uploaders = [""]
+            
             anime_name = " ".join(self.lineEdit_2.text().strip().split())
             start_end = (
                 (int(self.spinBox.text()), 10000)
@@ -392,7 +395,8 @@ class Ui_MainWindow(QDialog):
             )
             quality = int(self.comboBox.currentText()[:-1])
             option = 1 if self.radioButton.isChecked() else 2
-
+            untrusted_option = True if self.radioButton_2.isChecked() else False
+            
             folder_name = anime_name
             for c in unhandled_characters:
                 folder_name = folder_name.replace(c, "")
@@ -426,8 +430,8 @@ class Ui_MainWindow(QDialog):
             verbal_base (str): [description]
         """
 
-        self.notify(f"The anime {anime_name} has been fully checked!")
         self.set_widget_after_check()
+        self.notify(f"The anime {anime_name} has been fully checked!")
 
     def append_to_logs(self, text: str) -> None:
         """Appends a text to the logs widget
@@ -459,9 +463,9 @@ class WorkerThread(QThread):
         # Will break if "END" found in title (Erai-raws)
         while not unexpected_end and episode <= start_end[1] and fails_in_a_row < 10:
             for uploader in uploaders:
-                torrent = nyaa.find_torrent(uploader, anime_name, episode, quality)
+                torrent = nyaa.find_torrent(uploader, anime_name, episode, quality, untrusted_option)
 
-                if torrent is not None:
+                if torrent:
                     fails_in_a_row = 0
 
                     if option == 1:
