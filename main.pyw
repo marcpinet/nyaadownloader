@@ -1,7 +1,7 @@
 # ------------------------------IMPORTS------------------------------
 
 
-from lib import gui
+from util import gui
 
 from PyQt5 import QtWidgets, QtGui
 
@@ -17,7 +17,7 @@ def main() -> None:
     
 
     Make sure to write the title in Japanese.<br>
-    (e.g, instead of writting My Hero Academia, write Boku no Hero Academia).<br>
+    (e.g, instead of writing My Hero Academia, write Boku no Hero Academia).<br>
     Uploaders often use the Japanese title, you won't find your anime otherwise.<br>
     You may refer to MyAnimeList.net so you can get both translations.<br>
     Don't worry, there is no case sensitivity.<br><br>
