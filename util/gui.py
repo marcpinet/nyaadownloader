@@ -246,7 +246,7 @@ class Ui_MainWindow(QDialog):
         msg.setWindowIcon(QtGui.QIcon(ICON_PATH))
         msg.exec_()
 
-    def show_info_popup(self, info_message: str):
+    def show_info_popup(self, info_message: str) -> None:
         """Show an info popup message
 
         Args:
