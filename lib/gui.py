@@ -230,14 +230,14 @@ class Ui_MainWindow(QDialog):
         else:
             self.spinBox_2.setEnabled(True)
 
-    def show_error_popup(self, error_message: str) -> None:
+    def show_error_popup(self, error_message: Exception) -> None:
         """Show an error popup message
 
         Args:
             error_message (str): Message to display with the popup
         """
 
-        error_message = "\n".join(textwrap.wrap(error_message, width=100))
+        error_message = "\n".join(textwrap.wrap(str(error_message), width=100))
         msg = QMessageBox()
         msg.resize(500, 200)
         msg.setIcon(QMessageBox.Critical)
