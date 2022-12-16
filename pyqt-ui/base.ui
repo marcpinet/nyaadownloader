@@ -169,6 +169,11 @@
     </property>
     <item>
      <property name="text">
+      <string>2160p</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
       <string>1080p</string>
      </property>
     </item>

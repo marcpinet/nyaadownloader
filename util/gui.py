@@ -80,6 +80,7 @@ class Ui_MainWindow(QDialog):
         self.comboBox.addItem("")
         self.comboBox.addItem("")
         self.comboBox.addItem("")
+        self.comboBox.addItem("")
         self.label_6 = QtWidgets.QLabel(self.centralwidget)
         self.label_6.setGeometry(QtCore.QRect(30, 310, 361, 16))
         self.label_6.setObjectName("label_6")
@@ -164,9 +165,11 @@ class Ui_MainWindow(QDialog):
         self.label_3.setText(_translate("MainWindow", "Starting from:"))
         self.label_4.setText(_translate("MainWindow", "Until episode:"))
         self.label_5.setText(_translate("MainWindow", "Quality:"))
-        self.comboBox.setItemText(0, _translate("MainWindow", "1080p"))
-        self.comboBox.setItemText(1, _translate("MainWindow", "720p"))
-        self.comboBox.setItemText(2, _translate("MainWindow", "480p"))
+        self.comboBox.setItemText(0, _translate("MainWindow", "2160p"))
+        self.comboBox.setItemText(1, _translate("MainWindow", "1080p"))
+        self.comboBox.setItemText(2, _translate("MainWindow", "720p"))
+        self.comboBox.setItemText(3, _translate("MainWindow", "480p"))
+        self.comboBox.setCurrentIndex(1)
         self.label_6.setText(
             _translate(
                 "MainWindow",
