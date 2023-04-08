@@ -36,9 +36,9 @@ These instructions will get you a copy of the project up and running on your loc
 
 ### Support 👨‍💻
 
-Any problems with running the script and any questions please create a new issue [here](https://github.com/marcpinet/batch-downloader-nyaa.si/issues/new?assignees=&labels=&template=bug_report.md&title=).
+Any problems with running the script and any questions please create a new issue [here](https://github.com/marcpinet/nyaadownloader/issues/new?assignees=&labels=&template=bug_report.md&title=).
 
-You can also contribute to this project by requesting new features [here](https://github.com/marcpinet/batch-downloader-nyaa.si/issues/new?assignees=&labels=&template=feature_request.md&title=).
+You can also contribute to this project by requesting new features [here](https://github.com/marcpinet/nyaadownloader/issues/new?assignees=&labels=&template=feature_request.md&title=).
 
 I never ask for money for my open source projects. However, you can still tip me if you want.
 I am a [Brave Verified Creator](https://i.imgur.com/fOUfdM5.png)!
@@ -46,7 +46,7 @@ I am a [Brave Verified Creator](https://i.imgur.com/fOUfdM5.png)!
 ### How to use without Python installed
 
 I made an executable file of this project using [pyinstaller](https://github.com/pyinstaller/pyinstaller).
-You can find the latest release [here](https://github.com/marcpinet/batch-downloader-nyaa.si/releases/latest).
+You can find the latest release [here](https://github.com/marcpinet/nyaadownloader/releases/latest).
 
 ### Prerequisites
 
@@ -59,7 +59,7 @@ You will need to have a web browser that supports magnet link and also a bittorr
 Get a copy of the Project. Assuming you have git installed, open your Terminal and enter:
 
 ```bash
-git clone 'https://github.com/marcpinet/batch-downloader-nyaa.si.git'
+git clone 'https://github.com/marcpinet/nyaadownloader.git'
 ```
 
 To install all needed requirements run the following command in the project directory:
@@ -108,8 +108,8 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## To Do List 📝
 
-You can find what I plan to do for the project [here](https://github.com/marcpinet/batch-downloader-nyaa.si/projects).
-Also, you can find what I already implemented [here](https://github.com/marcpinet/batch-downloader-nyaa.si/projects?query=is%3Aclosed).
+You can find what I plan to do for the project [here](https://github.com/marcpinet/nyaadownloader/projects).
+Also, you can find what I already implemented [here](https://github.com/marcpinet/nyaadownloader/projects?query=is%3Aclosed).
 
 
 
