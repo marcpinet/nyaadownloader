@@ -4,11 +4,12 @@
 from . import nyaa
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QDialog, QInputDialog, QLineEdit
+from PyQt5.QtWidgets import QMessageBox, QDialog, QInputDialog, QLineEdit, QCheckBox
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from winotify import Notification, audio
 from shutil import move
 
+import configparser
 import textwrap
 import os
 import webbrowser as wb
@@ -24,6 +25,23 @@ ICON_PATH = "ico\\nyaa.ico"
 # ------------------------------CLASSES AND METHODS------------------------------
 
 
+def update_config(key: str, value: str) -> None:
+    """Update the config.ini file
+    Args:
+        key (str): Key to update
+        value (str): Value to set for the key
+    """
+    config = configparser.ConfigParser()
+    config.read("config.ini")
+
+    if not config.has_section("Settings"):
+        config.add_section("Settings")
+
+    config.set("Settings", key, value)
+
+    with open("config.ini", "w") as configfile:
+        config.write(configfile)
+            
 # Generated with Qt Designer (first time using this one)
 class Ui_MainWindow(QDialog):
     def setupUi(self, MainWindow) -> None:
@@ -288,13 +306,11 @@ class Ui_MainWindow(QDialog):
         msg.setWindowIcon(QtGui.QIcon(ICON_PATH))
         msg.exec_()
 
-    def show_info_popup(self, info_message: str) -> None:
+    def show_info_popup(self, info_message: str, never_show_again: bool = True) -> None:
         """Show an info popup message
-
         Args:
             info_message (str): Message to display with the popup
         """
-
         msg = QMessageBox()
         msg.setTextFormat(Qt.RichText)
         msg.resize(500, 200)
@@ -302,7 +318,15 @@ class Ui_MainWindow(QDialog):
         msg.setText(info_message)
         msg.setWindowTitle("NyaaDownloader")
         msg.setWindowIcon(QtGui.QIcon(ICON_PATH))
-        msg.exec_()
+
+        if never_show_again:
+            checkbox = QtWidgets.QCheckBox("Never show this popup again")
+            msg.setCheckBox(checkbox)
+
+        msg.setStandardButtons(QtWidgets.QMessageBox.Ok)
+
+        if msg.exec_() == QtWidgets.QMessageBox.Ok and checkbox.isChecked():
+            update_config("ShowPopup", "False")
 
     def set_widget_while_check(self) -> None:
         """Disable all widgets in the GUI."""
