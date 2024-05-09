@@ -35,113 +35,152 @@ class Ui_MainWindow(QDialog):
 
         MainWindow.setObjectName("NyaaDownloader")
         MainWindow.setWindowIcon(QtGui.QIcon(ICON_PATH))
-        MainWindow.resize(800, 440)
-        MainWindow.setMinimumSize(QtCore.QSize(800, 440))
-        MainWindow.setMaximumSize(QtCore.QSize(800, 440))
-        MainWindow.setLocale(
-            QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates)
-        )
+        MainWindow.resize(800, 341)
+        MainWindow.setMinimumSize(QtCore.QSize(800, 341))
+        MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+
+        main_layout = QtWidgets.QHBoxLayout(self.centralwidget)
+
+        left_layout = QtWidgets.QVBoxLayout()
+
         self.label = QtWidgets.QLabel(self.centralwidget)
-        self.label.setGeometry(QtCore.QRect(30, 30, 51, 16))
         self.label.setObjectName("label")
+        left_layout.addWidget(self.label)
+
         self.lineEdit = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit.setGeometry(QtCore.QRect(30, 50, 291, 20))
         self.lineEdit.setObjectName("lineEdit")
-        self.label_2 = QtWidgets.QLabel(self.centralwidget)
-        self.label_2.setGeometry(QtCore.QRect(30, 100, 61, 16))
+        left_layout.addWidget(self.lineEdit)
+
+        self.label_2 = QtWidgets.QLabel(self.centralwidget)  
         self.label_2.setObjectName("label_2")
+        left_layout.addWidget(self.label_2)
+
         self.lineEdit_2 = QtWidgets.QLineEdit(self.centralwidget)
-        self.lineEdit_2.setGeometry(QtCore.QRect(30, 120, 291, 20))
         self.lineEdit_2.setObjectName("lineEdit_2")
+        left_layout.addWidget(self.lineEdit_2)
+
+        mid_layout = QtWidgets.QHBoxLayout()
         self.label_3 = QtWidgets.QLabel(self.centralwidget)
-        self.label_3.setGeometry(QtCore.QRect(30, 170, 81, 16))
-        self.label_3.setObjectName("label_3")
+        self.label_3.setObjectName("label_3") 
+        mid_layout.addWidget(self.label_3)
+
         self.spinBox = QtWidgets.QSpinBox(self.centralwidget)
-        self.spinBox.setGeometry(QtCore.QRect(30, 190, 71, 22))
         self.spinBox.setMinimum(1)
-        self.spinBox.setMaximum(10000)
+        self.spinBox.setMaximum(10000) 
         self.spinBox.setObjectName("spinBox")
+        mid_layout.addWidget(self.spinBox)
+
         self.label_4 = QtWidgets.QLabel(self.centralwidget)
-        self.label_4.setGeometry(QtCore.QRect(150, 170, 71, 16))
         self.label_4.setObjectName("label_4")
+        mid_layout.addWidget(self.label_4)  
+
         self.spinBox_2 = QtWidgets.QSpinBox(self.centralwidget)
-        self.spinBox_2.setGeometry(QtCore.QRect(150, 190, 71, 22))
         self.spinBox_2.setMinimum(1)
         self.spinBox_2.setMaximum(10000)
         self.spinBox_2.setObjectName("spinBox_2")
+        mid_layout.addWidget(self.spinBox_2)
+
+        self.checkBox = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBox.setObjectName("checkBox")  
+        mid_layout.addWidget(self.checkBox)
+
+        left_layout.addLayout(mid_layout)
+
+        bottom_left_layout = QtWidgets.QVBoxLayout()
+
         self.label_5 = QtWidgets.QLabel(self.centralwidget)
-        self.label_5.setGeometry(QtCore.QRect(30, 240, 41, 16))
         self.label_5.setObjectName("label_5")
+        bottom_left_layout.addWidget(self.label_5)
+
         self.comboBox = QtWidgets.QComboBox(self.centralwidget)
-        self.comboBox.setGeometry(QtCore.QRect(30, 260, 69, 22))
         self.comboBox.setObjectName("comboBox")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
-        self.comboBox.addItem("")
+        self.comboBox.addItems(["2160p", "1080p", "720p", "480p"])
+        self.comboBox.setCurrentIndex(1)  
+        bottom_left_layout.addWidget(self.comboBox)
+        
         self.label_6 = QtWidgets.QLabel(self.centralwidget)
         self.label_6.setGeometry(QtCore.QRect(30, 310, 361, 16))
         self.label_6.setObjectName("label_6")
+        bottom_left_layout.addWidget(self.label_6)
+
         self.radioButton = QtWidgets.QRadioButton(self.centralwidget)
-        self.radioButton.setGeometry(QtCore.QRect(30, 330, 82, 17))
         self.radioButton.setChecked(True)
-        self.radioButton.setAutoExclusive(True)
-        self.radioButton.setObjectName("radioButton")
-        self.buttonGroup = QtWidgets.QButtonGroup(MainWindow)
-        self.buttonGroup.setObjectName("buttonGroup")
-        self.buttonGroup.addButton(self.radioButton)
-        self.radioButton_2 = QtWidgets.QRadioButton(self.centralwidget)
-        self.radioButton_2.setGeometry(QtCore.QRect(130, 330, 82, 17))
+        self.radioButton.setObjectName("radioButton") 
+        bottom_left_layout.addWidget(self.radioButton)
+
+        self.radioButton_2 = QtWidgets.QRadioButton(self.centralwidget)  
         self.radioButton_2.setObjectName("radioButton_2")
-        self.buttonGroup.addButton(self.radioButton_2)
-        self.checkBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.checkBox.setGeometry(QtCore.QRect(270, 190, 181, 17))
-        self.checkBox.setObjectName("checkBox")
+        bottom_left_layout.addWidget(self.radioButton_2)
+
+        btn_layout = QtWidgets.QHBoxLayout()
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton.setGeometry(QtCore.QRect(30, 370, 75, 23))
+        self.pushButton.setMinimumSize(QtCore.QSize(70, 30))
         self.pushButton.setObjectName("pushButton")
-        self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)
-        self.textBrowser.setGeometry(QtCore.QRect(460, 50, 311, 291))
-        self.textBrowser.setObjectName("textBrowser")
-        self.label_7 = QtWidgets.QLabel(self.centralwidget)
-        self.label_7.setGeometry(QtCore.QRect(460, 30, 31, 16))
-        self.label_7.setObjectName("label_7")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_2.setGeometry(QtCore.QRect(460, 370, 75, 23))
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_3.setGeometry(QtCore.QRect(550, 370, 91, 23))
-        self.pushButton_3.setObjectName("pushButton_3")
+        btn_layout.addWidget(self.pushButton)
+
         self.pushButton_4 = QtWidgets.QPushButton(self.centralwidget)
-        self.pushButton_4.setGeometry(QtCore.QRect(120, 370, 75, 23))
+        self.pushButton_4.setMinimumSize(QtCore.QSize(70, 30)) 
+        self.pushButton_4.setVisible(False)
         self.pushButton_4.setObjectName("pushButton_4")
+        btn_layout.addWidget(self.pushButton_4)  
+
+        bottom_left_layout.addLayout(btn_layout)
+
         self.checkBox_2 = QtWidgets.QCheckBox(self.centralwidget)
-        self.checkBox_2.setGeometry(QtCore.QRect(340, 50, 101, 17))
         self.checkBox_2.setObjectName("checkBox_2")
+        bottom_left_layout.addWidget(self.checkBox_2)
+
+        left_layout.addLayout(bottom_left_layout)
+        main_layout.addLayout(left_layout)
+
+        right_layout = QtWidgets.QVBoxLayout() 
+        self.label_7 = QtWidgets.QLabel(self.centralwidget)
+        self.label_7.setObjectName("label_7")
+        right_layout.addWidget(self.label_7)
+
+        self.textBrowser = QtWidgets.QTextBrowser(self.centralwidget)  
+        self.textBrowser.setObjectName("textBrowser")
+        right_layout.addWidget(self.textBrowser)
+
+        btn_layout_2 = QtWidgets.QHBoxLayout()
+        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_2.setMinimumSize(QtCore.QSize(100, 30))
+        self.pushButton_2.setObjectName("pushButton_2")
+        btn_layout_2.addWidget(self.pushButton_2)
+
+        self.pushButton_3 = QtWidgets.QPushButton(self.centralwidget)
+        self.pushButton_3.setMinimumSize(QtCore.QSize(100, 30))
+        self.pushButton_3.setObjectName("pushButton_3")  
+        btn_layout_2.addWidget(self.pushButton_3)
+
+        right_layout.addLayout(btn_layout_2)
+        main_layout.addLayout(right_layout)
+
         MainWindow.setCentralWidget(self.centralwidget)
+
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 800, 21))
-        self.menubar.setObjectName("menubar")
+        self.menubar.setObjectName("menubar")  
         self.menuTranslator = QtWidgets.QMenu(self.menubar)
         self.menuTranslator.setObjectName("menuTranslator")
         MainWindow.setMenuBar(self.menubar)
+
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
+
         self.actionGet_translation_of_an_anime_title = QtWidgets.QAction(MainWindow)
-        self.actionGet_translation_of_an_anime_title.setObjectName(
-            "actionGet_translation_of_an_anime_title"
-        )
+        self.actionGet_translation_of_an_anime_title.setObjectName("actionGet_translation_of_an_anime_title")
         self.menuTranslator.addAction(self.actionGet_translation_of_an_anime_title)
-        self.menubar.addAction(self.menuTranslator.menuAction())
+        self.menubar.addAction(self.menuTranslator.menuAction())  
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         # We will need to use it later for saving file as .txt
-        global mainWindow
+        global mainWindow  
         mainWindow = MainWindow
 
     def retranslateUi(self, MainWindow) -> None:
