@@ -4,7 +4,7 @@
 from . import nyaa
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QDialog, QInputDialog, QLineEdit, QCheckBox
+from PyQt5.QtWidgets import QMessageBox, QDialog, QInputDialog, QLineEdit
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
 from winotify import Notification, audio
 from shutil import move
@@ -31,15 +31,19 @@ def update_config(key: str, value: str) -> None:
         key (str): Key to update
         value (str): Value to set for the key
     """
+    config_dir = os.path.join(os.environ["APPDATA"], "NyaaDownloader")
+    os.makedirs(config_dir, exist_ok=True)
+    config_path = os.path.join(config_dir, "config.ini")
+
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    config.read(config_path)
 
     if not config.has_section("Settings"):
         config.add_section("Settings")
 
     config.set("Settings", key, value)
 
-    with open("config.ini", "w") as configfile:
+    with open(config_path, "w") as configfile:
         config.write(configfile)
             
 # Generated with Qt Designer (first time using this one)

@@ -3,10 +3,11 @@
 
 from util import gui
 
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets
 
 import sys
 import configparser
+import os
 
 
 # ------------------------------MAIN FUNCTION------------------------------
@@ -47,8 +48,11 @@ def main() -> None:
     ui.setupUi(MainWindow)
     MainWindow.show()
 
+    config_dir = os.path.join(os.environ["APPDATA"], "NyaaDownloader")
+    config_path = os.path.join(config_dir, "config.ini")
+
     config = configparser.ConfigParser()
-    config.read("config.ini")
+    config.read(config_path)
 
     if not config.has_option("Settings", "ShowPopup") or config.getboolean("Settings", "ShowPopup"):
         gui.Ui_MainWindow.show_info_popup(MainWindow, message, never_show_again=True)
