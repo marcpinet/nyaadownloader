@@ -369,18 +369,25 @@ class Ui_MainWindow(QDialog):
         self.pushButton_4.setVisible(False)  # Disabling Stop button
         self.pushButton_3.setEnabled(True)  # Enabling Save logs button
 
-    def generate_download_folder(self, anime_name: str) -> None:
+    @staticmethod
+    def get_download_folder(anime_name: str) -> str:
+        anime_name = " ".join(anime_name.strip().split())
+
+        for s in unhandled_characters:
+            anime_name = anime_name.replace(s, "")
+
+        downloads = QStandardPaths.writableLocation(QStandardPaths.DownloadLocation)
+        return os.path.join(downloads, "DownloadedTorrents", anime_name)
+
+    @classmethod
+    def generate_download_folder(cls, anime_name: str) -> None:
         """Generates a folder name for the .torrents download.
 
         Args:
             anime_name (str): Name of the anime.
         """
-
-        for s in unhandled_characters:
-            anime_name = anime_name.replace(s, "")
-
         try:
-            os.makedirs(f"DownloadedTorrents\\{anime_name}")
+            os.makedirs(cls.get_download_folder(anime_name), exist_ok=True)
 
         except FileExistsError:
             pass
@@ -388,7 +395,14 @@ class Ui_MainWindow(QDialog):
     def open_download_folder(self) -> None:
         """Open the DownloadedTorrents folder"""
         try:
-            os.startfile(f"{os.getcwd()}\DownloadedTorrents")
+            global anime_name
+            path = None
+            if anime_name is not None and len(anime_name) > 0:
+                path = self.get_download_folder(anime_name)
+            if path is None or not os.path.exists(path):
+                path = self.get_download_folder("")
+            if not QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(path)):
+                self.show_error_popup("Failed opening: " + path)
 
         except Exception as e:
             self.show_error_popup("DownloadedTorrents folder not found because: " + str(e))
@@ -485,11 +499,7 @@ class Ui_MainWindow(QDialog):
             option = 1 if self.radioButton.isChecked() else 2
             untrusted_option = True if self.radioButton_2.isChecked() else False
             
-            folder_name = anime_name
-            for c in unhandled_characters:
-                folder_name = folder_name.replace(c, "")
-
-            path = f"DownloadedTorrents\\{folder_name}"
+            path = self.get_download_folder(anime_name)
             self.start_checking()
 
         else:
@@ -508,7 +518,6 @@ class Ui_MainWindow(QDialog):
         self.worker.finished.connect(lambda: self.worker_finished())
         self.worker.update_logs.connect(self.append_to_logs)
         self.worker.error_popup.connect(self.show_error_popup)
-        self.worker.gen_folder.connect(self.generate_download_folder)
 
     def worker_finished(self) -> None:
         """When the thread has finished processing, enable all widgets again and notify the user
@@ -536,7 +545,6 @@ class WorkerThread(QThread):
 
     update_logs = pyqtSignal(str)
     error_popup = pyqtSignal(str)
-    gen_folder = pyqtSignal(str)
 
     def run(self) -> None:
         """The "almost main" function of that program. Will download/transfer every found torrent. Will also handle logs update, etc."""
@@ -559,10 +567,10 @@ class WorkerThread(QThread):
                     if option == 1:
 
                         if nyaa.download(torrent):
-                            self.gen_folder.emit(anime_name)
+                            Ui_MainWindow.generate_download_folder(anime_name)
                             move(
-                                f"{torrent['name']}.torrent",
-                                f"{path}\\{torrent['name']}.torrent",
+                                f"{torrent.name}.torrent",
+                                os.path.join(path, f"{torrent.name}.torrent"),
                             )
 
                         else:
