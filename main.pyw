@@ -3,8 +3,8 @@
 
 from util import gui
 
-from PyQt5 import QtWidgets
-from PyQt5.QtCore import QStandardPaths
+from PyQt6 import QtWidgets
+from PyQt6.QtCore import QStandardPaths
 
 import sys
 import configparser
@@ -50,7 +50,7 @@ def main() -> None:
     MainWindow.show()
 
     config_filename = "config.ini"
-    config_dir = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+    config_dir = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)
     config_path = os.path.join(config_dir, config_filename)
 
     config = configparser.ConfigParser()
@@ -59,7 +59,7 @@ def main() -> None:
     if not config.has_option("Settings", "ShowPopup") or config.getboolean("Settings", "ShowPopup"):
         gui.Ui_MainWindow.show_info_popup(MainWindow, message, never_show_again=True)
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 # ------------------------------MAIN CALL------------------------------

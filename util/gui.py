@@ -3,9 +3,9 @@
 
 from . import nyaa
 
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QDialog, QInputDialog, QLineEdit
-from PyQt5.QtCore import Qt, QThread, QStandardPaths, pyqtSignal
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QMessageBox, QDialog, QInputDialog, QLineEdit
+from PyQt6.QtCore import Qt, QThread, QStandardPaths, pyqtSignal
 from shutil import move
 
 import platform
@@ -33,7 +33,7 @@ def update_config(key: str, value: str) -> None:
         value (str): Value to set for the key
     """
     config_filename = "config.ini"
-    config_dir = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+    config_dir = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.AppDataLocation)
     os.makedirs(config_dir, exist_ok=True)
     config_path = os.path.join(config_dir, config_filename)
 
@@ -59,9 +59,9 @@ class Ui_MainWindow(QDialog):
 
         MainWindow.setObjectName("NyaaDownloader")
         MainWindow.setWindowIcon(QtGui.QIcon(ICON_PATH))
-        MainWindow.resize(800, 341)
-        MainWindow.setMinimumSize(QtCore.QSize(800, 341))
-        MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.English, QtCore.QLocale.UnitedStates))
+        MainWindow.resize(800, 450)
+        MainWindow.setMinimumSize(QtCore.QSize(800, 450))
+        MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.Language.English, QtCore.QLocale.Country.UnitedStates))
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -195,7 +195,7 @@ class Ui_MainWindow(QDialog):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
-        self.actionGet_translation_of_an_anime_title = QtWidgets.QAction(MainWindow)
+        self.actionGet_translation_of_an_anime_title = QtWidgets.QWidgetAction(MainWindow)
         self.actionGet_translation_of_an_anime_title.setObjectName("actionGet_translation_of_an_anime_title")
         self.menuTranslator.addAction(self.actionGet_translation_of_an_anime_title)
         self.menubar.addAction(self.menuTranslator.menuAction())  
@@ -273,10 +273,10 @@ class Ui_MainWindow(QDialog):
     def ask_anime_to_translate(self) -> None:
         """Asking anime title to translate by opening a link to MyAnimeList"""
         text, okPressed = QInputDialog.getText(
-            self, "Search in MyAnimeList", "Anime title to find in MyAnimeList:", QLineEdit.Normal
+            self, "Search in MyAnimeList", "Anime title to find in MyAnimeList:", QLineEdit.EchoMode.Normal
         )
         if okPressed and text != "":
-            text = urllib.quote(text)
+            text = urllib.parse.quote(text)
             wb.open(f"https://myanimelist.net/anime.php?q={text}&cat=anime")
 
     def cancel_process(self) -> None:
@@ -377,7 +377,7 @@ class Ui_MainWindow(QDialog):
         for s in unhandled_characters:
             anime_name = anime_name.replace(s, "")
 
-        downloads = QStandardPaths.writableLocation(QStandardPaths.DownloadLocation)
+        downloads = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DownloadLocation)
         return os.path.join(downloads, "DownloadedTorrents", anime_name)
 
     @classmethod
@@ -450,8 +450,8 @@ class Ui_MainWindow(QDialog):
             if name != "":
                 with open(f"{name}.txt", "w") as f:
                     f.write(self.textBrowser.toPlainText())
-        except Exception:
-            pass
+        except Exception as e:
+            self.show_error_popup(e)
 
     def is_everything_good(self) -> None:
         """Check if every input values are correct and if yes, will call the start_checking method"""
