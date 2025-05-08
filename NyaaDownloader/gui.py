@@ -21,7 +21,7 @@ import re
 
 
 unhandled_characters = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"]
-ICON_PATH = os.path.join("ico", "nyaa.ico")
+ICON_PATH = os.path.join(os.path.dirname(__file__), "icons", "nyaadownloader.ico")
 
 
 # ------------------------------CLASSES AND METHODS------------------------------

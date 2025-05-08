@@ -1,7 +1,7 @@
 # ------------------------------IMPORTS------------------------------
 
 
-from util import gui
+from . import gui
 
 from PyQt6 import QtWidgets
 from PyQt6.QtCore import QStandardPaths
@@ -42,8 +42,9 @@ def main() -> None:
     If you find any bug, please let me know on my GitHub:<br>
     <a href="https://github.com/marcpinet/nyaadownloader">https://github.com/marcpinet/nyaadownloader</a>.</p>"""
 
-    app = QtWidgets.QApplication([])
+    app = QtWidgets.QApplication(sys.argv)
     app.setApplicationName("NyaaDownloader")
+    app.setDesktopFileName("NyaaDownloader")
     MainWindow = QtWidgets.QMainWindow()
     ui = gui.Ui_MainWindow()
     ui.setupUi(MainWindow)
