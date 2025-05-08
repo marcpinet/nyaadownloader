@@ -125,13 +125,18 @@ class Ui_MainWindow(QDialog):
         self.comboBox = QtWidgets.QComboBox(self.centralwidget)
         self.comboBox.setObjectName("comboBox")
         self.comboBox.addItems([
+            "Best",
             "2160p",
+            "2160p AV1",
             "2160p HEVC",
             "1080p",
+            "1080p AV1",
             "1080p HEVC",
             "720p",
+            "720p AV1",
             "720p HEVC",
             "480p",
+            "480p AV1",
             "480p HEVC",
         ])
         self.comboBox.setCurrentIndex(2)  
@@ -244,15 +249,20 @@ class Ui_MainWindow(QDialog):
         self.label_3.setText(_translate("MainWindow", "Starting from:"))
         self.label_4.setText(_translate("MainWindow", "Until episode:"))
         self.label_5.setText(_translate("MainWindow", "Quality:"))
-        self.comboBox.setItemText(0, _translate("MainWindow", "2160p"))
-        self.comboBox.setItemText(1, _translate("MainWindow", "2160p HEVC"))
-        self.comboBox.setItemText(2, _translate("MainWindow", "1080p"))
-        self.comboBox.setItemText(3, _translate("MainWindow", "1080p HEVC"))
-        self.comboBox.setItemText(4, _translate("MainWindow", "720p"))
-        self.comboBox.setItemText(5, _translate("MainWindow", "720p HEVC"))
-        self.comboBox.setItemText(6, _translate("MainWindow", "480p"))
-        self.comboBox.setItemText(7, _translate("MainWindow", "480p HEVC"))
-        self.comboBox.setCurrentIndex(2)
+        self.comboBox.setItemText(0, _translate("MainWindow", "Best"))
+        self.comboBox.setItemText(1, _translate("MainWindow", "2160p"))
+        self.comboBox.setItemText(2, _translate("MainWindow", "2160p AV1"))
+        self.comboBox.setItemText(3, _translate("MainWindow", "2160p HEVC"))
+        self.comboBox.setItemText(4, _translate("MainWindow", "1080p"))
+        self.comboBox.setItemText(5, _translate("MainWindow", "1080p AV1"))
+        self.comboBox.setItemText(6, _translate("MainWindow", "1080p HEVC"))
+        self.comboBox.setItemText(7, _translate("MainWindow", "720p"))
+        self.comboBox.setItemText(8, _translate("MainWindow", "720p AV1"))
+        self.comboBox.setItemText(9, _translate("MainWindow", "720p HEVC"))
+        self.comboBox.setItemText(10, _translate("MainWindow", "480p"))
+        self.comboBox.setItemText(11, _translate("MainWindow", "480p AV1"))
+        self.comboBox.setItemText(12, _translate("MainWindow", "480p HEVC"))
+        self.comboBox.setCurrentIndex(0)
         self.label_6.setText(
             _translate(
                 "MainWindow",
@@ -506,7 +516,7 @@ class Ui_MainWindow(QDialog):
         # Setting proper values
         if everything_good:
 
-            global uploaders, anime_name, start_end, quality, hevc, option, untrusted_option, path
+            global uploaders, anime_name, start_end, quality, codec, option, untrusted_option, path
 
             uploaders = [
                 u.strip() for u in self.lineEdit.text().strip().split(";") if u != ""
@@ -521,8 +531,13 @@ class Ui_MainWindow(QDialog):
                 if self.checkBox.isChecked()
                 else (int(self.spinBox.text()), int(self.spinBox_2.text()))
             )
-            quality = int(re.search(r'\d+', self.comboBox.currentText()).group())
-            hevc = "HEVC" in self.comboBox.currentText()
+            quality_text = self.comboBox.currentText()
+            quality = None if quality_text == "Best" else int(re.search(r'\d+', quality_text).group())
+            codec = None
+            if "AV1" in quality_text:
+                codec = "AV1"
+            elif "HEVC" in quality_text:
+                codec = "HEVC"
             if self.radioButton_3.isChecked():
                 option = 3
             elif self.radioButton_2.isChecked():
@@ -589,9 +604,9 @@ class WorkerThread(QThread):
         unexpected_end = False
 
         # Will break if "END" found in title (Erai-raws)
-        while not unexpected_end and episode <= start_end[1] and fails_in_a_row < 3:
+        while not unexpected_end and episode <= start_end[1] and fails_in_a_row < 2:
             for uploader in uploaders:
-                torrent = nyaa.find_torrent(uploader, anime_name, episode, quality, hevc, untrusted_option)
+                torrent = nyaa.find_torrent(uploader, anime_name, episode, quality, codec, untrusted_option)
 
                 if torrent:
                     fails_in_a_row = 0
@@ -650,7 +665,7 @@ class WorkerThread(QThread):
 
             episode += 1
 
-        if fails_in_a_row >= 3:
+        if fails_in_a_row >= 2:
             self.update_logs.emit(
-                f"Note: {anime_name} seems to only have {episode - 4} episodes"
+                f"\nNote: {anime_name} seems to only have {episode - 3} episodes"
             )
