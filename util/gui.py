@@ -51,6 +51,7 @@ def update_config(key: str, value: str) -> None:
             
 # Generated with Qt Designer (first time using this one)
 class Ui_MainWindow(QDialog):
+
     def setupUi(self, MainWindow: QtWidgets.QMainWindow) -> None:
         """Build skeleton of the GUI
 
@@ -60,8 +61,8 @@ class Ui_MainWindow(QDialog):
 
         MainWindow.setObjectName("NyaaDownloader")
         MainWindow.setWindowIcon(QtGui.QIcon(ICON_PATH))
-        MainWindow.resize(800, 470)
-        MainWindow.setMinimumSize(QtCore.QSize(800, 470))
+        MainWindow.resize(800, 490)
+        MainWindow.setMinimumSize(QtCore.QSize(800, 490))
         MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.Language.English, QtCore.QLocale.Country.World))
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
@@ -178,6 +179,11 @@ class Ui_MainWindow(QDialog):
         self.checkBox_2.setObjectName("checkBox_2")
         bottom_left_layout.addWidget(self.checkBox_2)
 
+        self.checkBox_3 = QtWidgets.QCheckBox(self.centralwidget)
+        self.checkBox_3.setObjectName("checkBox_3")
+        self.checkBox_3.setChecked(True)
+        bottom_left_layout.addWidget(self.checkBox_3)
+
         left_layout.addLayout(bottom_left_layout)
         main_layout.addLayout(left_layout)
 
@@ -219,7 +225,7 @@ class Ui_MainWindow(QDialog):
         self.actionGet_translation_of_an_anime_title = QtWidgets.QWidgetAction(MainWindow)
         self.actionGet_translation_of_an_anime_title.setObjectName("actionGet_translation_of_an_anime_title")
         self.menuTranslator.addAction(self.actionGet_translation_of_an_anime_title)
-        self.menubar.addAction(self.menuTranslator.menuAction())  
+        self.menubar.addAction(self.menuTranslator.menuAction())
 
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
@@ -279,6 +285,7 @@ class Ui_MainWindow(QDialog):
         self.pushButton_3.setText(_translate("MainWindow", "Save logs as .txt"))
         self.pushButton_4.setText(_translate("MainWindow", "Stop"))
         self.checkBox_2.setText(_translate("MainWindow", "Allow untrusted (torrents not uploaded by trusted users)"))
+        self.checkBox_3.setText(_translate("MainWindow", "Allow batches (multiple episodes in a single torrent)"))
         self.menuTranslator.setTitle(_translate("MainWindow", "Translator"))
         self.actionGet_translation_of_an_anime_title.setText(
             _translate("MainWindow", "Get translation of an anime title")
@@ -381,6 +388,7 @@ class Ui_MainWindow(QDialog):
         self.radioButton_3.setEnabled(False)
         self.pushButton_3.setEnabled(False)
         self.checkBox_2.setEnabled(False)
+        self.checkBox_3.setEnabled(False)
 
         self.pushButton_4.setVisible(True)
 
@@ -400,6 +408,7 @@ class Ui_MainWindow(QDialog):
         self.radioButton_2.setEnabled(True)
         self.radioButton_3.setEnabled(True)
         self.checkBox_2.setEnabled(True)
+        self.checkBox_3.setEnabled(True)
 
         self.pushButton_2.setEnabled(True)  # Enabling Open Folder button
         self.pushButton_4.setVisible(False)  # Disabling Stop button
@@ -516,7 +525,7 @@ class Ui_MainWindow(QDialog):
         # Setting proper values
         if everything_good:
 
-            global uploaders, anime_name, start_end, quality, codec, option, untrusted_option, path
+            global uploaders, anime_name, start_end, quality, codec, option, untrusted_option, allow_batch, path
 
             uploaders = [
                 u.strip() for u in self.lineEdit.text().strip().split(";") if u != ""
@@ -544,7 +553,8 @@ class Ui_MainWindow(QDialog):
                 option = 2
             else: #self.radioButton.isChecked():
                 option = 1
-            untrusted_option = True if self.checkBox_2.isChecked() else False
+            untrusted_option = self.checkBox_2.isChecked()
+            allow_batch = self.checkBox_3.isChecked()
             
             path = self.get_download_folder(anime_name)
             self.start_checking()
@@ -565,6 +575,7 @@ class Ui_MainWindow(QDialog):
         self.worker.finished.connect(lambda: self.worker_finished())
         self.worker.update_logs.connect(self.append_to_logs)
         self.worker.error_popup.connect(self.show_error_popup)
+        self.worker.statusbar_signal.connect(lambda text: self.statusbar.showMessage(text))
 
     def worker_finished(self) -> None:
         """When the thread has finished processing, enable all widgets again and notify the user
@@ -592,6 +603,7 @@ class WorkerThread(QThread):
 
     update_logs = pyqtSignal(str)
     error_popup = pyqtSignal(str)
+    statusbar_signal = pyqtSignal(str)
 
     def run(self) -> None:
         """The "almost main" function of that program. Will download/transfer every found torrent. Will also handle logs update, etc."""
@@ -606,7 +618,7 @@ class WorkerThread(QThread):
         # Will break if "END" found in title (Erai-raws)
         while not unexpected_end and episode <= start_end[1] and fails_in_a_row < 2:
             for uploader in uploaders:
-                torrent = nyaa.find_torrent(uploader, anime_name, episode, quality, codec, untrusted_option)
+                torrent = nyaa.find_torrent(uploader, anime_name, episode, quality, codec, untrusted_option, allow_batch, start_end, self.statusbar_signal)
 
                 if torrent:
                     fails_in_a_row = 0
@@ -639,8 +651,13 @@ class WorkerThread(QThread):
                             magnetsfile.write("\n")
                             magnetsfile.close()
 
+                    torrent_batch_info = nyaa.parse_batch_info(torrent.name)
 
-                    self.update_logs.emit(f"Found: {anime_name} - Episode {episode}")
+                    if torrent_batch_info is not None:
+                        self.update_logs.emit(f"Found: {anime_name} - Episode {torrent_batch_info[0]} ~ {torrent_batch_info[1]}")
+                        episode = torrent_batch_info[1]
+                    else:
+                        self.update_logs.emit(f"Found: {anime_name} - Episode {episode}")
                     self.update_logs.emit("")
                     self.update_logs.emit(torrent.name)
                     self.update_logs.emit("")
