@@ -79,6 +79,8 @@ def parse_batch_info(torrent_name: str) -> None | tuple:
     m = re.search(r"[\s(\[]([0-9]+)\s*[-~]\s*([0-9]+)[\s)\]]", torrent_name)
     if m is None:
         return None
+    if m[1] == m[2]:
+        return None
     return (int(m[1]), int(m[2]))
 
 def find_torrent(uploader: str, anime_name: str, episode_num: int, quality: int, codec: str | None, untrusted_option: bool, allow_batch: bool, start_end: tuple[int, int], statusbar_signal) -> Torrent | None:
@@ -181,33 +183,45 @@ def find_torrent(uploader: str, anime_name: str, episode_num: int, quality: int,
                     break
 
         if torrent is None:
-            for t in found_torrents:
-                t_name = t.name.lower()
-                batch_start_end = parse_batch_info(t_name)
-                if (
-                    f"{a_name} - {episode}" in t_name
-                    and batch_start_end is None
-                ):
-                    torrent = t
+            for v in range(9, -1, -1):
+                episode = get_episode_str(episode_num)
+                if v > 0:
+                    episode = episode + "v" + str(v)
+                for t in found_torrents:
+                    t_name = t.name.lower()
+                    batch_start_end = parse_batch_info(t_name)
+                    if (
+                        f"{a_name} - {episode}" in t_name
+                        and batch_start_end is None
+                    ):
+                        torrent = t
+                        break
+                if torrent is not None:
                     break
 
         # Else, we take try to get a close title to the one we are looking for.
         if torrent is None:
-            for t in found_torrents:
-                t_name = t.name.lower()
-                batch_start_end = parse_batch_info(t_name)
-                if (
-                    a_name in t_name
-                    and (
-                        f" {episode} " in t_name
-                        or f"({episode})" in t_name
-                        or f"[{episode}]" in t_name
-                        or f"E{episode} " in t_name
-                        or f"E{episode}]" in t_name
-                    )
-                    and batch_start_end is None
-                ):
-                    torrent = t
+            for v in range(9, -1, -1):
+                episode = get_episode_str(episode_num)
+                if v > 0:
+                    episode = episode + "v" + str(v)
+                for t in found_torrents:
+                    t_name = t.name.lower()
+                    batch_start_end = parse_batch_info(t_name)
+                    if (
+                        a_name in t_name
+                        and (
+                            f" {episode} " in t_name
+                            or f"({episode})" in t_name
+                            or f"[{episode}]" in t_name
+                            or f"E{episode} " in t_name
+                            or f"E{episode}]" in t_name
+                        )
+                        and batch_start_end is None
+                    ):
+                        torrent = t
+                        break
+                if torrent is not None:
                     break
 
     except Exception as e:
