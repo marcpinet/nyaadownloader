@@ -105,10 +105,12 @@ class Ui_MainWindow(QDialog):
         self.spinBox_2.setMinimum(1)
         self.spinBox_2.setMaximum(10000)
         self.spinBox_2.setObjectName("spinBox_2")
+        self.spinBox_2.setEnabled(False)
         mid_layout.addWidget(self.spinBox_2)
 
         self.checkBox = QtWidgets.QCheckBox(self.centralwidget)
-        self.checkBox.setObjectName("checkBox")  
+        self.checkBox.setObjectName("checkBox")
+        self.checkBox.setChecked(True)
         mid_layout.addWidget(self.checkBox)
 
         left_layout.addLayout(mid_layout)
@@ -361,13 +363,13 @@ class Ui_MainWindow(QDialog):
         self.lineEdit_2.setEnabled(True)
         self.comboBox.setEnabled(True)
         self.spinBox.setEnabled(True)
-        self.spinBox_2.setEnabled(True)
+        if not self.checkBox.isChecked():
+            self.spinBox_2.setEnabled(True)
         self.checkBox.setEnabled(True)
         self.radioButton.setEnabled(True)
         self.radioButton_2.setEnabled(True)
         self.checkBox_2.setEnabled(True)
 
-        self.checkBox.setChecked(False)  # Reseting checkbox
         self.pushButton_2.setEnabled(True)  # Enabling Open Folder button
         self.pushButton_4.setVisible(False)  # Disabling Stop button
         self.pushButton_3.setEnabled(True)  # Enabling Save logs button
@@ -560,7 +562,7 @@ class WorkerThread(QThread):
         unexpected_end = False
 
         # Will break if "END" found in title (Erai-raws)
-        while not unexpected_end and episode <= start_end[1] and fails_in_a_row < 10:
+        while not unexpected_end and episode <= start_end[1] and fails_in_a_row < 3:
             for uploader in uploaders:
                 torrent = nyaa.find_torrent(uploader, anime_name, episode, quality, untrusted_option)
 
@@ -611,7 +613,7 @@ class WorkerThread(QThread):
 
             episode += 1
 
-        if fails_in_a_row >= 10:
+        if fails_in_a_row >= 3:
             self.update_logs.emit(
-                f"Note: {anime_name} seems to only have {episode - 11} episodes"
+                f"Note: {anime_name} seems to only have {episode - 4} episodes"
             )
