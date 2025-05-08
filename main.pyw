@@ -4,6 +4,7 @@
 from util import gui
 
 from PyQt5 import QtWidgets
+from PyQt5.QtCore import QStandardPaths
 
 import sys
 import configparser
@@ -48,8 +49,9 @@ def main() -> None:
     ui.setupUi(MainWindow)
     MainWindow.show()
 
-    config_dir = os.path.join(os.environ["APPDATA"], "NyaaDownloader")
-    config_path = os.path.join(config_dir, "config.ini")
+    config_filename = "config.ini"
+    config_dir = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+    config_path = os.path.join(config_dir, config_filename)
 
     config = configparser.ConfigParser()
     config.read(config_path)

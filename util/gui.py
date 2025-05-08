@@ -5,21 +5,22 @@ from . import nyaa
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QDialog, QInputDialog, QLineEdit
-from PyQt5.QtCore import Qt, QThread, pyqtSignal
-from winotify import Notification, audio
+from PyQt5.QtCore import Qt, QThread, QStandardPaths, pyqtSignal
 from shutil import move
 
+import platform
 import configparser
 import textwrap
 import os
 import webbrowser as wb
+import urllib
 
 
 # ------------------------------GLOBAL VARIABLES------------------------------
 
 
 unhandled_characters = ["\\", "/", ":", "*", "?", '"', "<", ">", "|"]
-ICON_PATH = "ico\\nyaa.ico"
+ICON_PATH = os.path.join("ico", "nyaa.ico")
 
 
 # ------------------------------CLASSES AND METHODS------------------------------
@@ -31,9 +32,10 @@ def update_config(key: str, value: str) -> None:
         key (str): Key to update
         value (str): Value to set for the key
     """
-    config_dir = os.path.join(os.environ["APPDATA"], "NyaaDownloader")
+    config_filename = "config.ini"
+    config_dir = QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
     os.makedirs(config_dir, exist_ok=True)
-    config_path = os.path.join(config_dir, "config.ini")
+    config_path = os.path.join(config_dir, config_filename)
 
     config = configparser.ConfigParser()
     config.read(config_path)
@@ -48,7 +50,7 @@ def update_config(key: str, value: str) -> None:
             
 # Generated with Qt Designer (first time using this one)
 class Ui_MainWindow(QDialog):
-    def setupUi(self, MainWindow) -> None:
+    def setupUi(self, MainWindow: QtWidgets.QMainWindow) -> None:
         """Build skeleton of the GUI
 
         Args:
@@ -398,13 +400,29 @@ class Ui_MainWindow(QDialog):
             message (str): Message to be displayed
         """
 
-        toast = Notification(
-            app_id="NyaaDownloader",
-            title="NyaaDownloader",
-            msg=message,
-        )
-        toast.set_audio(audio.Default, loop=False)
-        toast.build().show()
+        system = platform.system()
+        if system == "Linux":
+            import gi
+            gi.require_version("Notify", "0.7")
+            from gi.repository import Notify
+            Notify.init("NyaaDownloader")
+            Notify.Notification.new("NyaaDownloader", message).show()
+        elif system == "Windows":
+            from winotify import Notification, audio
+            toast = Notification(
+                app_id="NyaaDownloader",
+                title="NyaaDownloader",
+                msg=message,
+            )
+            toast.set_audio(audio.Default, loop=False)
+            toast.build().show()
+        elif system == "Darwin":
+            from Foundation import NSUserNotification, NSUserNotificationCenter
+            notification = NSUserNotification.alloc().init()
+            notification.setTitle("NyaaDownloader")
+            notification.setInformativeText(message)
+            NSUserNotificationCenter.defaultUserNotificationCenter().deliverNotification(notification)
+
 
     def save_logs(self) -> None:
         """Saves the logs to a .txt file."""
