@@ -59,9 +59,9 @@ class Ui_MainWindow(QDialog):
 
         MainWindow.setObjectName("NyaaDownloader")
         MainWindow.setWindowIcon(QtGui.QIcon(ICON_PATH))
-        MainWindow.resize(800, 450)
-        MainWindow.setMinimumSize(QtCore.QSize(800, 450))
-        MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.Language.English, QtCore.QLocale.Country.UnitedStates))
+        MainWindow.resize(800, 470)
+        MainWindow.setMinimumSize(QtCore.QSize(800, 470))
+        MainWindow.setLocale(QtCore.QLocale(QtCore.QLocale.Language.English, QtCore.QLocale.Country.World))
 
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
@@ -140,6 +140,10 @@ class Ui_MainWindow(QDialog):
         self.radioButton_2 = QtWidgets.QRadioButton(self.centralwidget)  
         self.radioButton_2.setObjectName("radioButton_2")
         bottom_left_layout.addWidget(self.radioButton_2)
+
+        self.radioButton_3 = QtWidgets.QRadioButton(self.centralwidget)  
+        self.radioButton_3.setObjectName("radioButton_3")
+        bottom_left_layout.addWidget(self.radioButton_3)
 
         btn_layout = QtWidgets.QHBoxLayout()
         self.pushButton = QtWidgets.QPushButton(self.centralwidget)
@@ -241,15 +245,16 @@ class Ui_MainWindow(QDialog):
                 "Download .torrent files or open magnet links directly in your torrent client?",
             )
         )
-        self.radioButton.setText(_translate("MainWindow", "Torrent"))
-        self.radioButton_2.setText(_translate("MainWindow", "Magnet"))
+        self.radioButton.setText(_translate("MainWindow", "Download .torrent files"))
+        self.radioButton_2.setText(_translate("MainWindow", "Magnet (launch torrent client)"))
+        self.radioButton_3.setText(_translate("MainWindow", "Magnet (write to a text file)"))
         self.checkBox.setText(_translate("MainWindow", "Until last released one"))
         self.pushButton.setText(_translate("MainWindow", "Check"))
         self.label_7.setText(_translate("MainWindow", "Logs:"))
         self.pushButton_2.setText(_translate("MainWindow", "Open folder"))
         self.pushButton_3.setText(_translate("MainWindow", "Save logs as .txt"))
         self.pushButton_4.setText(_translate("MainWindow", "Stop"))
-        self.checkBox_2.setText(_translate("MainWindow", "Allow untrusted"))
+        self.checkBox_2.setText(_translate("MainWindow", "Allow untrusted (torrents not uploaded by trusted users)"))
         self.menuTranslator.setTitle(_translate("MainWindow", "Translator"))
         self.actionGet_translation_of_an_anime_title.setText(
             _translate("MainWindow", "Get translation of an anime title")
@@ -349,6 +354,7 @@ class Ui_MainWindow(QDialog):
         self.checkBox.setEnabled(False)
         self.radioButton.setEnabled(False)
         self.radioButton_2.setEnabled(False)
+        self.radioButton_3.setEnabled(False)
         self.pushButton_3.setEnabled(False)
         self.checkBox_2.setEnabled(False)
 
@@ -368,6 +374,7 @@ class Ui_MainWindow(QDialog):
         self.checkBox.setEnabled(True)
         self.radioButton.setEnabled(True)
         self.radioButton_2.setEnabled(True)
+        self.radioButton_3.setEnabled(True)
         self.checkBox_2.setEnabled(True)
 
         self.pushButton_2.setEnabled(True)  # Enabling Open Folder button
@@ -501,7 +508,12 @@ class Ui_MainWindow(QDialog):
                 else (int(self.spinBox.text()), int(self.spinBox_2.text()))
             )
             quality = int(self.comboBox.currentText()[:-1])
-            option = 1 if self.radioButton.isChecked() else 2
+            if self.radioButton_3.isChecked():
+                option = 3
+            elif self.radioButton_2.isChecked():
+                option = 2
+            else: #self.radioButton.isChecked():
+                option = 1
             untrusted_option = True if self.checkBox_2.isChecked() else False
             
             path = self.get_download_folder(anime_name)
@@ -583,13 +595,20 @@ class WorkerThread(QThread):
                             unexpected_end = True
                             break
 
-                    # I prefer this rather than a simple else because it's cleaner
                     elif option == 2 and not nyaa.transfer(torrent):
                         self.error_popup.emit(
                             "No bittorrent client or web browser (that supports magnet links) found."
                         )
                         unexpected_end = True
                         break
+
+                    elif option == 3:
+                        Ui_MainWindow.generate_download_folder(anime_name)
+                        with open(os.path.join(path, "magnets.txt"), "a") as magnetsfile:
+                            magnetsfile.write(torrent.magnet)
+                            magnetsfile.write("\n")
+                            magnetsfile.close()
+
 
                     self.update_logs.emit(f"Found: {anime_name} - Episode {episode}")
 

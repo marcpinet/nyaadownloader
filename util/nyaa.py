@@ -65,12 +65,10 @@ def transfer(torrent: dict) -> bool:
         bool: True if the transfer was successful, False otherwise.
     """
     try:
-        wb.open(torrent.magnet)
+        return wb.open(torrent.magnet)
 
     except:
         return False
-
-    return True
 
 
 def find_torrent(uploader: str, anime_name: str, episode: int, quality: int, untrusted_option: bool) -> dict:
