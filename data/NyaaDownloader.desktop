@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Name=NyaaDownloader
+Comment=A tool to download multiple torrents or transfer magnets from Nyaa.si
+Categories=Internet
+Exec=nyaadownloader %F
+Type=Application
+Icon=nyaadownloader
+StartupWMClass=NyaaDownloader
+Keywords=Nyaa;Batch Downloader;Torrent;Magnet;Anime

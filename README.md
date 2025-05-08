@@ -1,5 +1,7 @@
 # NyaaDownloader
 
+[![AUR Version](https://img.shields.io/aur/version/nyaadownloader-git)](https://aur.archlinux.org/packages/nyaadownloader-git)
+
 🚀 Download many .torrent from Nyaa.si at a time! 🚀
 
 🔌 Instantly transfer them into your Bittorrent client 🔌
@@ -13,7 +15,7 @@
 ## Features
 
 * Integrated Graphical User Interface (GUI) 🖥
-* Enter uploaders name (defaults are [Erai-raws](https://www.erai-raws.info/) and [Subsplease](https://subsplease.org/)) 🤖
+* Enter uploaders name (defaults are any, popular choices are [Erai-raws](https://www.erai-raws.info/) and [SubsPlease](https://subsplease.org/)) 🤖
 * Enter the anime title you want to download ✏️
 * Choose the quality 🎞
 * Retrieve them either as .torrent or directly transfer them into your Bittorrent client ⚙️
@@ -73,7 +75,7 @@ To run this script open your Terminal in the project directory.
 To start the script, enter:
 
 ```bash
-pythonw main.pyw
+python -m NyaaDownloader.__main__
 ```
 
 You can then close the Terminal.
@@ -95,6 +97,7 @@ However, they don't always name them like that. For instance, it can be named *J
 ## Authors
 
 * **Marc Pinet** - *Initial work* - [marcpinet](https://github.com/marcpinet)
+* **p0358** - *Various enhancements* - [p0358](https://github.com/p0358)
 
 ## License
 
@@ -108,6 +111,3 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 You can find what I plan to do for the project [here](https://github.com/marcpinet/nyaadownloader/projects).
 Also, you can find what I already implemented [here](https://github.com/marcpinet/nyaadownloader/projects?query=is%3Aclosed).
-
-
-

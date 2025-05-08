@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=62.4"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "NyaaDownloader"
+version = "4.0.0"
+description = "A tool to download multiple torrents or transfer magnets from Nyaa.si"
+readme = "README.md"
+authors = [{ name = "Marc Pinet" }, { name = "p0358" }]
+license = { text = "MIT" }
+classifiers = [
+  "Environment :: X11 Applications :: Qt",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3 :: Only",
+]
+requires-python = ">=3.9"
+dependencies = [
+  "PyQt6",
+  "nyaapy>=0.7",
+  "requests>=2.28.1",
+  #"winotify>=1.1.0",
+]
+
+[project.gui-scripts]
+nyaadownloader = "NyaaDownloader.__main__:main"
+
+[project.urls]
+Homepage = "https://github.com/marcpinet/nyaadownloader"
+"Issue Tracker" = "https://github.com/marcpinet/nyaadownloader/issues"
+
+[tool.setuptools]
+packages = ["NyaaDownloader"]
+include-package-data = false
+
+[tool.setuptools.data-files]
+"share/applications" = ["data/NyaaDownloader.desktop"]
+"share/icons" = ["NyaaDownloader/icons/nyaadownloader.*"]
+
+[tool.setuptools.package-data]
+NyaaDownloader = ["icons/*.ico", "icons/*.png"]
