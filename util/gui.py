@@ -502,7 +502,7 @@ class Ui_MainWindow(QDialog):
             )
             quality = int(self.comboBox.currentText()[:-1])
             option = 1 if self.radioButton.isChecked() else 2
-            untrusted_option = True if self.radioButton_2.isChecked() else False
+            untrusted_option = True if self.checkBox_2.isChecked() else False
             
             path = self.get_download_folder(anime_name)
             self.start_checking()
