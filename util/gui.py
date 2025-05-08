@@ -566,7 +566,7 @@ class WorkerThread(QThread):
                             )
 
                         else:
-                            self.error_popup.emit("No Internet connection available")
+                            self.error_popup.emit(f"Failed downloading: {torrent.name}")
                             unexpected_end = True
                             break
 
@@ -581,7 +581,7 @@ class WorkerThread(QThread):
                     self.update_logs.emit(f"Found: {anime_name} - Episode {episode}")
 
                     # Erai-raws add "END" in the torrent name when an anime has finished airing
-                    if uploader == "Erai-raws" and torrent["name"].find(" END [") != -1:
+                    if uploader == "Erai-raws" and torrent.name.find(" END [") != -1:
                         self.update_logs.emit(
                             f"Note: {anime_name} has no more than {episode} episodes"
                         )
@@ -593,7 +593,7 @@ class WorkerThread(QThread):
                 else:
                     if uploader == uploaders[-1]:
                         self.update_logs.emit(
-                            f"Failed: {anime_name} - Episode {episode}"
+                            f"Failed finding: {anime_name} - Episode {episode}"
                         )
 
                         fails_in_a_row += 1

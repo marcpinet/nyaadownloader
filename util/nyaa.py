@@ -1,7 +1,7 @@
 # ------------------------------IMPORTS------------------------------
 
 
-import NyaaPy
+import nyaapy.nyaasi.nyaa as NyaaPy
 import requests
 import webbrowser as wb
 
@@ -15,7 +15,7 @@ def is_in_database(anime_name: str) -> bool:
         anime_name (str): Name of the anime to check.
 
     Raises:
-        Exception: If the anime is not found in the database, the only possible reason is that user has no Internet connection.
+        Exception: If the underlying module throws one.
 
     Returns:
         bool: True if check was successful, False otherwise.
@@ -30,8 +30,8 @@ def is_in_database(anime_name: str) -> bool:
             == 0
         ):
             return False
-    except:
-        raise Exception("No Internet connection available.")
+    except Exception as e:
+        raise e
     return True
 
 
@@ -45,8 +45,8 @@ def download(torrent: dict) -> bool:
         bool: True if the transfer was successful, False otherwise.
     """
     try:
-        with requests.get(torrent["download_url"]) as response, open(
-            torrent["name"] + ".torrent", "wb"
+        with requests.get(torrent.download_url) as response, open(
+            torrent.name + ".torrent", "wb"
         ) as out_file:
             out_file.write(response.content)
 
@@ -65,7 +65,7 @@ def transfer(torrent: dict) -> bool:
         bool: True if the transfer was successful, False otherwise.
     """
     try:
-        wb.open(torrent["magnet"])
+        wb.open(torrent.magnet)
 
     except:
         return False
@@ -102,14 +102,17 @@ def find_torrent(uploader: str, anime_name: str, episode: int, quality: int, unt
         subcategory=2,
         filters=0 if untrusted_option else 2,
     )
+
+    if not isinstance(found_torrents, list) or len(found_torrents) == 0:
+        return {}
     
     try:
         # We take the very closest title to what we are looking for.
         torrent = None
         for t in found_torrents:  # (break if found, so we get the most recent one)
             if (
-                t["name"].lower().find(f"{anime_name} - {episode}".lower()) != -1
-                and t["name"].lower().find("~") == -1
+                t.name.lower().find(f"{anime_name} - {episode}".lower()) != -1
+                and t.name.lower().find("~") == -1
             ):  # we want to avoid ~ because Erai-Raws use it for already packed episodes
                 torrent = t
                 break
@@ -118,16 +121,14 @@ def find_torrent(uploader: str, anime_name: str, episode: int, quality: int, unt
         if torrent is None:
             for t in found_torrents:
                 if (
-                    t["name"].lower().find(f"{anime_name}".lower()) != -1
-                    and t["name"].lower().find(f" {episode} ") != -1
-                    and t["name"].lower().find("~") == -1
+                    t.name.lower().find(f"{anime_name}".lower()) != -1
+                    and t.name.lower().find(f" {episode} ") != -1
+                    and t.name.lower().find("~") == -1
                 ):  # we want to avoid ~ because Erai-Raws use it for already packed episodes
                     torrent = t
                     break
 
-    # The only exception possible is that no torrent have been found when NyaaPy.Nyaa.search()
-    # (we are doing dict operations on a None object => raise an exception)
-    except:
-        return {}
+    except Exception as e:
+        raise e
 
     return torrent
