@@ -40,7 +40,7 @@ def main() -> None:
     Only depends if the uploaders uploaded them episode by episode or not.<br><br>
 
     If you find any bug, please let me know on my GitHub:<br>
-    <a href="https://github.com/marcpinet">https://github.com/marcpinet</a>.</p>"""
+    <a href="https://github.com/marcpinet/nyaadownloader">https://github.com/marcpinet/nyaadownloader</a>.</p>"""
 
     app = QtWidgets.QApplication([])
     app.setApplicationName("NyaaDownloader")

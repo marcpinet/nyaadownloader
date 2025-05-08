@@ -273,9 +273,10 @@ class Ui_MainWindow(QDialog):
     def ask_anime_to_translate(self) -> None:
         """Asking anime title to translate by opening a link to MyAnimeList"""
         text, okPressed = QInputDialog.getText(
-            self, "Title Translator", "Anime Title:", QLineEdit.Normal, ""
+            self, "Search in MyAnimeList", "Anime title to find in MyAnimeList:", QLineEdit.Normal
         )
         if okPressed and text != "":
+            text = urllib.quote(text)
             wb.open(f"https://myanimelist.net/anime.php?q={text}&cat=anime")
 
     def cancel_process(self) -> None:
@@ -408,7 +409,7 @@ class Ui_MainWindow(QDialog):
             self.show_error_popup("DownloadedTorrents folder not found because: " + str(e))
 
     def notify(self, message: str) -> None:
-        """Generate a windows 10 notifcation with a message
+        """Generate a notifcation with a message
 
         Args:
             message (str): Message to be displayed
