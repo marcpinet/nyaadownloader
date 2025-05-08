@@ -348,6 +348,7 @@ class Ui_MainWindow(QDialog):
         self.radioButton.setEnabled(False)
         self.radioButton_2.setEnabled(False)
         self.pushButton_3.setEnabled(False)
+        self.checkBox_2.setEnabled(False)
 
         self.pushButton_4.setVisible(True)
 
@@ -364,6 +365,7 @@ class Ui_MainWindow(QDialog):
         self.checkBox.setEnabled(True)
         self.radioButton.setEnabled(True)
         self.radioButton_2.setEnabled(True)
+        self.checkBox_2.setEnabled(True)
 
         self.checkBox.setChecked(False)  # Reseting checkbox
         self.pushButton_2.setEnabled(True)  # Enabling Open Folder button
