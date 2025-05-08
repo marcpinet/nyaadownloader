@@ -71,7 +71,7 @@ def transfer(torrent: dict) -> bool:
         return False
 
 
-def find_torrent(uploader: str, anime_name: str, episode: int, quality: int, untrusted_option: bool) -> dict:
+def find_torrent(uploader: str, anime_name: str, episode: int, quality: int, hevc: bool, untrusted_option: bool) -> dict:
     """Find if the torrent is already in the database. If not, download it.
     Args:
         uploader (str): The name of the uploader.
@@ -89,28 +89,40 @@ def find_torrent(uploader: str, anime_name: str, episode: int, quality: int, unt
     else:
         episode = "0" + str(episode)
 
-    found_torrents = NyaaPy.Nyaa.search(
-        keyword=f"[{uploader}] {anime_name} - {episode} [{quality}p]",
-        category=1,
-        subcategory=2,
-        filters=0 if untrusted_option else 2,
-    ) + NyaaPy.Nyaa.search(
-        keyword=f"[{uploader}] {anime_name} - {episode} ({quality}p)",
-        category=1,
-        subcategory=2,
-        filters=0 if untrusted_option else 2,
-    )
+    hevc_keywords = ["HEVC", "x265", "H.265"]
 
-    if not isinstance(found_torrents, list) or len(found_torrents) == 0:
+    queries = []
+
+    # Explicitly either HEVC or not
+    if hevc:
+        queries.append(f"[{uploader}] ({anime_name}) {episode} [{quality}p] " + "|".join(map(lambda k: f'"{k}"', hevc_keywords)))
+    else:
+        queries.append(f"[{uploader}] ({anime_name}) {episode} [{quality}p] " + " ".join(map(lambda k: f'-"{k}"', hevc_keywords)))
+
+    found_torrents = []
+    for query in queries:
+        chunk = NyaaPy.Nyaa.search(
+            keyword=query,
+            category=1,
+            subcategory=2,
+            filters=0 if untrusted_option else 2,
+        )
+        print(query, found_torrents)
+        if not isinstance(found_torrents, list) or len(found_torrents) == 0:
+            found_torrents = found_torrents + chunk
+
+    if len(found_torrents) == 0:
         return {}
     
     try:
         # We take the very closest title to what we are looking for.
         torrent = None
-        for t in found_torrents:  # (break if found, so we get the most recent one)
+        a_name = anime_name.lower()
+        for t in found_torrents: # (break if found, so we get the most recent one)
+            t_name = t.name.lower()
             if (
-                t.name.lower().find(f"{anime_name} - {episode}".lower()) != -1
-                and t.name.lower().find("~") == -1
+                f"{a_name} - {episode}" in t_name
+                and "~" not in t_name
             ):  # we want to avoid ~ because Erai-Raws use it for already packed episodes
                 torrent = t
                 break
@@ -118,10 +130,11 @@ def find_torrent(uploader: str, anime_name: str, episode: int, quality: int, unt
         # Else, we take try to get a close title to the one we are looking for.
         if torrent is None:
             for t in found_torrents:
+                t_name = t.name.lower()
                 if (
-                    t.name.lower().find(f"{anime_name}".lower()) != -1
-                    and t.name.lower().find(f" {episode} ") != -1
-                    and t.name.lower().find("~") == -1
+                    a_name in t_name
+                    and f" {episode} " in t_name
+                    and "~" not in t_name
                 ):  # we want to avoid ~ because Erai-Raws use it for already packed episodes
                     torrent = t
                     break

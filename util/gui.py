@@ -14,6 +14,7 @@ import textwrap
 import os
 import webbrowser as wb
 import urllib
+import re
 
 
 # ------------------------------GLOBAL VARIABLES------------------------------
@@ -123,8 +124,17 @@ class Ui_MainWindow(QDialog):
 
         self.comboBox = QtWidgets.QComboBox(self.centralwidget)
         self.comboBox.setObjectName("comboBox")
-        self.comboBox.addItems(["2160p", "1080p", "720p", "480p"])
-        self.comboBox.setCurrentIndex(1)  
+        self.comboBox.addItems([
+            "2160p",
+            "2160p HEVC",
+            "1080p",
+            "1080p HEVC",
+            "720p",
+            "720p HEVC",
+            "480p",
+            "480p HEVC",
+        ])
+        self.comboBox.setCurrentIndex(2)  
         bottom_left_layout.addWidget(self.comboBox)
         
         self.label_6 = QtWidgets.QLabel(self.centralwidget)
@@ -224,7 +234,7 @@ class Ui_MainWindow(QDialog):
         self.label.setText(_translate("MainWindow", "Uploaders:"))
         self.lineEdit.setPlaceholderText(
             _translate(
-                "MainWindow", "Empty=all, else use semicolon like Erai-raws;SubsPlease"
+                "MainWindow", "Empty = all, otherwise separate with semicolon like Erai-raws;SubsPlease"
             )
         )
         self.label_2.setText(_translate("MainWindow", "Anime Title:"))
@@ -235,10 +245,14 @@ class Ui_MainWindow(QDialog):
         self.label_4.setText(_translate("MainWindow", "Until episode:"))
         self.label_5.setText(_translate("MainWindow", "Quality:"))
         self.comboBox.setItemText(0, _translate("MainWindow", "2160p"))
-        self.comboBox.setItemText(1, _translate("MainWindow", "1080p"))
-        self.comboBox.setItemText(2, _translate("MainWindow", "720p"))
-        self.comboBox.setItemText(3, _translate("MainWindow", "480p"))
-        self.comboBox.setCurrentIndex(1)
+        self.comboBox.setItemText(1, _translate("MainWindow", "2160p HEVC"))
+        self.comboBox.setItemText(2, _translate("MainWindow", "1080p"))
+        self.comboBox.setItemText(3, _translate("MainWindow", "1080p HEVC"))
+        self.comboBox.setItemText(4, _translate("MainWindow", "720p"))
+        self.comboBox.setItemText(5, _translate("MainWindow", "720p HEVC"))
+        self.comboBox.setItemText(6, _translate("MainWindow", "480p"))
+        self.comboBox.setItemText(7, _translate("MainWindow", "480p HEVC"))
+        self.comboBox.setCurrentIndex(2)
         self.label_6.setText(
             _translate(
                 "MainWindow",
@@ -492,7 +506,7 @@ class Ui_MainWindow(QDialog):
         # Setting proper values
         if everything_good:
 
-            global uploaders, anime_name, start_end, quality, option, untrusted_option, path
+            global uploaders, anime_name, start_end, quality, hevc, option, untrusted_option, path
 
             uploaders = [
                 u.strip() for u in self.lineEdit.text().strip().split(";") if u != ""
@@ -507,7 +521,8 @@ class Ui_MainWindow(QDialog):
                 if self.checkBox.isChecked()
                 else (int(self.spinBox.text()), int(self.spinBox_2.text()))
             )
-            quality = int(self.comboBox.currentText()[:-1])
+            quality = int(re.search(r'\d+', self.comboBox.currentText()).group())
+            hevc = "HEVC" in self.comboBox.currentText()
             if self.radioButton_3.isChecked():
                 option = 3
             elif self.radioButton_2.isChecked():
@@ -576,7 +591,7 @@ class WorkerThread(QThread):
         # Will break if "END" found in title (Erai-raws)
         while not unexpected_end and episode <= start_end[1] and fails_in_a_row < 3:
             for uploader in uploaders:
-                torrent = nyaa.find_torrent(uploader, anime_name, episode, quality, untrusted_option)
+                torrent = nyaa.find_torrent(uploader, anime_name, episode, quality, hevc, untrusted_option)
 
                 if torrent:
                     fails_in_a_row = 0
@@ -611,9 +626,12 @@ class WorkerThread(QThread):
 
 
                     self.update_logs.emit(f"Found: {anime_name} - Episode {episode}")
+                    self.update_logs.emit("")
+                    self.update_logs.emit(torrent.name)
+                    self.update_logs.emit("")
 
                     # Erai-raws add "END" in the torrent name when an anime has finished airing
-                    if uploader == "Erai-raws" and torrent.name.find(" END [") != -1:
+                    if uploader == "Erai-raws" and " END [" in torrent.name:
                         self.update_logs.emit(
                             f"Note: {anime_name} has no more than {episode} episodes"
                         )
