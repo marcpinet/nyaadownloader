@@ -2,6 +2,7 @@
 
 
 from . import nyaa
+from . import torrent_parser
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QDialog, QInputDialog, QLineEdit
@@ -262,6 +263,15 @@ class Ui_MainWindow(QDialog):
         self.actionGet_translation_of_an_anime_title.triggered.connect(
             self.ask_anime_to_translate
         )
+        
+        # Add menu action for torrent analysis
+        self.actionAnalyze_torrent_title = QtWidgets.QAction(MainWindow)
+        self.actionAnalyze_torrent_title.setObjectName("actionAnalyze_torrent_title")
+        self.actionAnalyze_torrent_title.setText("Analyze torrent title with PTT")
+        self.menuTranslator.addAction(self.actionAnalyze_torrent_title)
+        self.actionAnalyze_torrent_title.triggered.connect(
+            self.analyze_torrent_title
+        )
 
         # Disabling buttons that doesn't have to be pressed atm
         self.pushButton_2.setEnabled(False)
@@ -275,6 +285,109 @@ class Ui_MainWindow(QDialog):
         )
         if okPressed and text != "":
             wb.open(f"https://myanimelist.net/anime.php?q={text}&cat=anime")
+    
+    def analyze_torrent_title(self) -> None:
+        """Analyze a torrent title using PTT and show detailed results."""
+        text, okPressed = QInputDialog.getText(
+            self, "PTT Torrent Analyzer", "Torrent Title to Analyze:", QLineEdit.Normal, ""
+        )
+        if okPressed and text != "":
+            try:
+                # Parse the torrent title using PTT
+                parsed_torrent = torrent_parser.parse_torrent_title(text, translate_languages=True)
+                
+                # Create detailed analysis message
+                analysis = f"<h3>PTT Analysis Results</h3>"
+                analysis += f"<p><b>Original Title:</b> {text}</p>"
+                analysis += f"<hr>"
+                
+                # Basic information
+                if parsed_torrent.title:
+                    analysis += f"<p><b>🎬 Title:</b> {parsed_torrent.title}</p>"
+                if parsed_torrent.year:
+                    analysis += f"<p><b>📅 Year:</b> {parsed_torrent.year}</p>"
+                    
+                # Episode and season info
+                if parsed_torrent.seasons:
+                    analysis += f"<p><b>📺 Seasons:</b> {', '.join(map(str, parsed_torrent.seasons))}</p>"
+                if parsed_torrent.episodes:
+                    if len(parsed_torrent.episodes) == 1:
+                        analysis += f"<p><b>🎞️ Episode:</b> {parsed_torrent.episodes[0]}</p>"
+                    else:
+                        analysis += f"<p><b>🎞️ Episodes:</b> {parsed_torrent.episodes[0]}-{parsed_torrent.episodes[-1]} ({len(parsed_torrent.episodes)} total)</p>"
+                
+                # Quality information
+                if parsed_torrent.resolution:
+                    analysis += f"<p><b>📺 Resolution:</b> {parsed_torrent.resolution}</p>"
+                if parsed_torrent.quality:
+                    analysis += f"<p><b>💎 Quality/Source:</b> {parsed_torrent.quality}</p>"
+                if parsed_torrent.codec:
+                    analysis += f"<p><b>🎬 Codec:</b> {parsed_torrent.codec.upper()}</p>"
+                if parsed_torrent.bit_depth:
+                    analysis += f"<p><b>🎨 Bit Depth:</b> {parsed_torrent.bit_depth}</p>"
+                if parsed_torrent.hdr:
+                    analysis += f"<p><b>🌈 HDR:</b> {', '.join(parsed_torrent.hdr)}</p>"
+                
+                # Audio information
+                if parsed_torrent.audio:
+                    analysis += f"<p><b>🔊 Audio:</b> {', '.join(parsed_torrent.audio)}</p>"
+                if parsed_torrent.channels:
+                    analysis += f"<p><b>🎵 Channels:</b> {', '.join(parsed_torrent.channels)}</p>"
+                
+                # Language and subtitle info
+                if parsed_torrent.languages:
+                    analysis += f"<p><b>🌐 Languages:</b> {', '.join(parsed_torrent.languages)}</p>"
+                if parsed_torrent.dubbed:
+                    analysis += f"<p><b>🎤 Dubbed:</b> Yes</p>"
+                if parsed_torrent.subbed:
+                    analysis += f"<p><b>📝 Subtitled:</b> Yes</p>"
+                
+                # Release info
+                if parsed_torrent.group:
+                    analysis += f"<p><b>👥 Release Group:</b> {parsed_torrent.group}</p>"
+                if parsed_torrent.complete:
+                    analysis += f"<p><b>📦 Complete Series:</b> Yes</p>"
+                if parsed_torrent.repack:
+                    analysis += f"<p><b>🔄 Repack:</b> Yes</p>"
+                if parsed_torrent.proper:
+                    analysis += f"<p><b>✅ Proper:</b> Yes</p>"
+                
+                # Container and file info
+                if parsed_torrent.container:
+                    analysis += f"<p><b>📁 Container:</b> {parsed_torrent.container.upper()}</p>"
+                if parsed_torrent.extension:
+                    analysis += f"<p><b>📄 Extension:</b> {parsed_torrent.extension}</p>"
+                
+                # Quality score
+                quality_score = parsed_torrent.get_quality_score()
+                analysis += f"<hr>"
+                analysis += f"<p><b>⭐ PTT Quality Score:</b> {quality_score}</p>"
+                analysis += f"<p><i>Higher scores indicate better quality based on resolution, source, codec, audio, etc.</i></p>"
+                
+                # Summary
+                summary = torrent_parser.get_torrent_summary(parsed_torrent)
+                analysis += f"<hr>"
+                analysis += f"<p><b>📋 Summary:</b><br>{summary}</p>"
+                
+                # Show the analysis in a popup
+                self.show_analysis_popup(analysis)
+                
+            except Exception as e:
+                self.show_error_popup(f"Error analyzing torrent title: {str(e)}")
+    
+    def show_analysis_popup(self, analysis_text: str) -> None:
+        """Show torrent analysis results in a popup."""
+        msg = QMessageBox()
+        msg.setTextFormat(Qt.RichText)
+        msg.setWindowTitle("PTT Torrent Analysis")
+        msg.setWindowIcon(QtGui.QIcon(ICON_PATH))
+        msg.setText(analysis_text)
+        msg.setStandardButtons(QMessageBox.Ok)
+        
+        # Make the dialog larger to accommodate the analysis
+        msg.resize(600, 400)
+        
+        msg.exec_()
 
     def cancel_process(self) -> None:
         """Cancel the check process by using a specific variable"""
@@ -538,6 +651,9 @@ class WorkerThread(QThread):
                 if torrent:
                     fails_in_a_row = 0
 
+                    # Get detailed information about the torrent using PTT
+                    torrent_details = nyaa.get_torrent_details(torrent)
+                    
                     if option == 1:
 
                         if nyaa.download(torrent):
@@ -560,12 +676,21 @@ class WorkerThread(QThread):
                         unexpected_end = True
                         break
 
-                    self.update_logs.emit(f"Found: {anime_name} - Episode {episode}")
+                    # Enhanced logging with PTT parsing results
+                    if torrent_details:
+                        summary = torrent_parser.get_torrent_summary(torrent_details)
+                        self.update_logs.emit(f"✅ Found: Episode {episode}")
+                        self.update_logs.emit(f"   📋 {summary}")
+                        self.update_logs.emit(f"   🔗 Quality Score: {torrent_details.get_quality_score()}")
+                        if torrent_details.languages:
+                            self.update_logs.emit(f"   🌐 Languages: {', '.join(torrent_details.languages)}")
+                    else:
+                        self.update_logs.emit(f"Found: {anime_name} - Episode {episode}")
 
                     # Erai-raws add "END" in the torrent name when an anime has finished airing
                     if uploader == "Erai-raws" and torrent["name"].find(" END [") != -1:
                         self.update_logs.emit(
-                            f"Note: {anime_name} has no more than {episode} episodes"
+                            f"📺 Note: {anime_name} has no more than {episode} episodes"
                         )
                         unexpected_end = True
 
@@ -575,7 +700,7 @@ class WorkerThread(QThread):
                 else:
                     if uploader == uploaders[-1]:
                         self.update_logs.emit(
-                            f"Failed: {anime_name} - Episode {episode}"
+                            f"❌ Failed: {anime_name} - Episode {episode} (No matching torrents found)"
                         )
 
                         fails_in_a_row += 1
@@ -584,5 +709,5 @@ class WorkerThread(QThread):
 
         if fails_in_a_row >= 10:
             self.update_logs.emit(
-                f"Note: {anime_name} seems to only have {episode - 11} episodes"
+                f"📺 Note: {anime_name} seems to only have {episode - 11} episodes (reached 10 consecutive failures)"
             )

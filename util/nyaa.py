@@ -4,6 +4,8 @@
 import NyaaPy
 import requests
 import webbrowser as wb
+from . import torrent_parser
+from typing import List, Optional, Dict
 
 
 # ------------------------------FUNCTIONS------------------------------
@@ -74,60 +76,189 @@ def transfer(torrent: dict) -> bool:
 
 
 def find_torrent(uploader: str, anime_name: str, episode: int, quality: int, untrusted_option: bool) -> dict:
-    """Find if the torrent is already in the database. If not, download it.
+    """Find if the torrent is already in the database using PTT for enhanced parsing.
     Args:
         uploader (str): The name of the uploader.
         anime_name (str): The name of the anime.
         episode (int): The episode number.
-        quality (str): The quality of the torrent.
+        quality (int): The quality of the torrent (e.g., 1080).
+        untrusted_option (bool): Whether to include untrusted torrents.
 
     Returns:
-        dict: Returns torrent if found, else None.
+        dict: Returns torrent if found, else empty dict.
     """
-
-    # Because anime title usually have their episode number like '0X' when X < 10, we need to add a 0 to the episode number.
-    if episode >= 10:
-        episode = str(episode)
-    else:
-        episode = "0" + str(episode)
-
-    found_torrents = NyaaPy.Nyaa.search(
-        keyword=f"[{uploader}] {anime_name} - {episode} [{quality}p]",
-        category=1,
-        subcategory=2,
-        filters=0 if untrusted_option else 2,
-    ) + NyaaPy.Nyaa.search(
-        keyword=f"[{uploader}] {anime_name} - {episode} ({quality}p)",
-        category=1,
-        subcategory=2,
-        filters=0 if untrusted_option else 2,
-    )
-    
     try:
-        # We take the very closest title to what we are looking for.
-        torrent = None
-        for t in found_torrents:  # (break if found, so we get the most recent one)
-            if (
-                t["name"].lower().find(f"{anime_name} - {episode}".lower()) != -1
-                and t["name"].lower().find("~") == -1
-            ):  # we want to avoid ~ because Erai-Raws use it for already packed episodes
-                torrent = t
-                break
-
-        # Else, we take try to get a close title to the one we are looking for.
-        if torrent is None:
-            for t in found_torrents:
-                if (
-                    t["name"].lower().find(f"{anime_name}".lower()) != -1
-                    and t["name"].lower().find(f" {episode} ") != -1
-                    and t["name"].lower().find("~") == -1
-                ):  # we want to avoid ~ because Erai-Raws use it for already packed episodes
-                    torrent = t
+        # Search for torrents with multiple patterns to increase success rate
+        search_patterns = [
+            f"[{uploader}] {anime_name} - {episode:02d} [{quality}p]",
+            f"[{uploader}] {anime_name} - {episode} [{quality}p]",
+            f"[{uploader}] {anime_name} - {episode:02d} ({quality}p)",
+            f"[{uploader}] {anime_name} - {episode} ({quality}p)",
+            f"{uploader} {anime_name} {episode:02d}",
+            f"{anime_name} {episode:02d} {quality}p",
+            f"{anime_name} - {episode:02d}"
+        ]
+        
+        found_torrents = []
+        
+        # If no specific uploader, search more broadly
+        if not uploader:
+            search_patterns = [
+                f"{anime_name} - {episode:02d} [{quality}p]",
+                f"{anime_name} - {episode} [{quality}p]",
+                f"{anime_name} {episode:02d} {quality}p",
+                f"{anime_name} - {episode:02d}",
+                f"{anime_name} episode {episode}"
+            ]
+        
+        # Search with each pattern
+        for pattern in search_patterns[:3]:  # Limit to first 3 patterns to avoid too many requests
+            try:
+                torrents = NyaaPy.Nyaa.search(
+                    keyword=pattern,
+                    category=1,
+                    subcategory=2,
+                    filters=0 if untrusted_option else 2,
+                )
+                found_torrents.extend(torrents)
+                if len(found_torrents) > 20:  # Stop if we have enough results
                     break
-
-    # The only exception possible is that no torrent have been found when NyaaPy.Nyaa.search()
-    # (we are doing dict operations on a None object => raise an exception)
-    except:
+            except Exception:
+                continue
+        
+        if not found_torrents:
+            return {}
+        
+        # Use PTT to find the best matching torrent
+        preferred_groups = [uploader] if uploader else []
+        best_torrent = torrent_parser.get_best_torrent(
+            found_torrents, 
+            anime_name, 
+            episode, 
+            f"{quality}p", 
+            preferred_groups
+        )
+        
+        if best_torrent and hasattr(best_torrent, 'torrent_data'):
+            return best_torrent.torrent_data
+        
+        # Fallback to original logic if PTT parsing fails
+        return _find_torrent_fallback(found_torrents, anime_name, episode, uploader)
+        
+    except Exception as e:
+        print(f"Error in find_torrent: {e}")
         return {}
 
-    return torrent
+
+def _find_torrent_fallback(found_torrents: List[Dict], anime_name: str, episode: int, uploader: str) -> Dict:
+    """Fallback method using original logic if PTT parsing fails."""
+    try:
+        episode_str = f"{episode:02d}" if episode < 10 else str(episode)
+        
+        # Original logic - look for exact matches first
+        for t in found_torrents:
+            if (
+                t["name"].lower().find(f"{anime_name} - {episode_str}".lower()) != -1
+                and t["name"].lower().find("~") == -1
+            ):
+                return t
+
+        # Fallback - look for partial matches
+        for t in found_torrents:
+            if (
+                t["name"].lower().find(f"{anime_name}".lower()) != -1
+                and t["name"].lower().find(f" {episode_str} ") != -1
+                and t["name"].lower().find("~") == -1
+            ):
+                return t
+                
+    except Exception:
+        pass
+        
+    return {}
+
+
+def get_torrent_details(torrent: dict) -> Optional[torrent_parser.TorrentInfo]:
+    """Get detailed information about a torrent using PTT parsing.
+    
+    Args:
+        torrent (dict): The dictionary returned by the NyaaPy.search() method.
+        
+    Returns:
+        Optional[TorrentInfo]: Parsed torrent information or None if parsing fails.
+    """
+    try:
+        parsed_torrent = torrent_parser.parse_torrent_title(torrent["name"])
+        parsed_torrent.torrent_data = torrent
+        return parsed_torrent
+    except Exception as e:
+        print(f"Error parsing torrent details: {e}")
+        return None
+
+
+def search_anime_torrents(anime_name: str, uploader: str = "", quality: str = "", 
+                         episode_range: tuple = None, limit: int = 50) -> List[torrent_parser.TorrentInfo]:
+    """Search for anime torrents with enhanced filtering using PTT.
+    
+    Args:
+        anime_name (str): Name of the anime to search for.
+        uploader (str): Preferred uploader/group name.
+        quality (str): Preferred quality (e.g., "1080p").
+        episode_range (tuple): Range of episodes to search for (start, end).
+        limit (int): Maximum number of results to return.
+        
+    Returns:
+        List[TorrentInfo]: List of parsed torrent information.
+    """
+    try:
+        # Build search query
+        search_terms = [anime_name]
+        if uploader:
+            search_terms.append(uploader)
+        if quality:
+            search_terms.append(quality)
+            
+        search_query = " ".join(search_terms)
+        
+        # Search for torrents
+        found_torrents = NyaaPy.Nyaa.search(
+            keyword=search_query,
+            category=1,
+            subcategory=2,
+            filters=2,  # Trusted only by default
+        )
+        
+        parsed_torrents = []
+        for torrent in found_torrents[:limit]:
+            try:
+                parsed_torrent = torrent_parser.parse_torrent_title(torrent["name"])
+                parsed_torrent.torrent_data = torrent
+                
+                # Filter by criteria
+                if anime_name.lower() not in parsed_torrent.title.lower():
+                    continue
+                    
+                if uploader and (not parsed_torrent.group or uploader.lower() not in parsed_torrent.group.lower()):
+                    continue
+                    
+                if quality and parsed_torrent.resolution != quality:
+                    continue
+                    
+                if episode_range and parsed_torrent.episodes:
+                    # Check if any episode in the torrent falls within the desired range
+                    start_ep, end_ep = episode_range
+                    if not any(start_ep <= ep <= end_ep for ep in parsed_torrent.episodes):
+                        continue
+                
+                parsed_torrents.append(parsed_torrent)
+                
+            except Exception as e:
+                print(f"Error parsing torrent '{torrent['name']}': {e}")
+                continue
+        
+        # Sort by quality score
+        return sorted(parsed_torrents, key=lambda t: t.get_quality_score(), reverse=True)
+        
+    except Exception as e:
+        print(f"Error searching anime torrents: {e}")
+        return []
