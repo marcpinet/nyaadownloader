@@ -1,17 +1,23 @@
-# Auto-generated folders
-.git/
-.vscode/
+# Python
 __pycache__/
-lib/__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+.ruff_cache/
 
-# Generated folders/files by the program
+# Editors
+.vscode/
+.idea/
+
+# Torrents saved by v2 next to the script
 DownloadedTorrents/
 
-# Generated folders from PyInstaller
+# PyInstaller output
 build/
 dist/
-main.spec
 
-# PyInstaller .bat script that allows me to create the .exe from the release
-binary_gen.bat
-
+# Promo video: renders and the (copyrighted) soundtrack stay local
+promo/out/
+promo/*.mp3
+promo/cover.jpg

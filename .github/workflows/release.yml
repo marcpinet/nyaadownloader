@@ -1,0 +1,91 @@
+name: Build & release
+
+# Every push to main is tested, built into a Windows executable and published as a
+# GitHub release. Pull requests only run the tests.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - ".github/ISSUE_TEMPLATE/**"
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  test:
+    runs-on: windows-latest
+    env:
+      QT_QPA_PLATFORM: offscreen
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: pytest -q
+
+  release:
+    needs: test
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: pyproject.toml
+      - run: pip install -e ".[dev]"
+
+      - name: Work out the version
+        id: version
+        shell: bash
+        run: |
+          version=$(python -c "import nyaadownloader; print(nyaadownloader.__version__)")
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "tag=v$version-build.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build the executable
+        run: pyinstaller --noconfirm NyaaDownloader.spec
+
+      - name: Check the executable starts
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath dist\NyaaDownloader.exe -PassThru
+          Start-Sleep -Seconds 10
+          if ($p.HasExited) { throw "NyaaDownloader.exe exited with code $($p.ExitCode)" }
+          Stop-Process -Id $p.Id -Force
+
+      - name: Package
+        shell: bash
+        run: |
+          cd dist
+          mv NyaaDownloader.exe "NyaaDownloader-${{ steps.version.outputs.version }}.exe"
+          sha256sum NyaaDownloader-*.exe > SHA256SUMS.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: NyaaDownloader-${{ steps.version.outputs.tag }}
+          path: dist/*
+
+      - name: Publish the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ steps.version.outputs.tag }}" dist/NyaaDownloader-*.exe dist/SHA256SUMS.txt \
+            --target "${{ github.sha }}" \
+            --title "NyaaDownloader ${{ steps.version.outputs.version }} (build ${{ github.run_number }})" \
+            --generate-notes \
+            --latest

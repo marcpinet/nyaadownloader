@@ -1,113 +1,181 @@
+<div align="center">
+
+<img src="docs/logo.png" alt="NyaaDownloader logo" width="180">
+
 # NyaaDownloader
 
-🚀 Download many .torrent from Nyaa.si at a time! 🚀
+**A whole season of anime from Nyaa, in three clicks.**
 
-🔌 Instantly transfer them into your Bittorrent client 🔌
+Type a title, tick the episodes, grab the torrents. NyaaDownloader finds the right release for every episode for you.
 
-🔎 Automatically search the closest title to ensure an accurate result 🔎
+[![Latest release](https://img.shields.io/github/v/release/marcpinet/nyaadownloader?style=for-the-badge&color=3566f0&label=release)](https://github.com/marcpinet/nyaadownloader/releases/latest)
+[![Build](https://img.shields.io/github/actions/workflow/status/marcpinet/nyaadownloader/release.yml?branch=main&style=for-the-badge&label=build)](https://github.com/marcpinet/nyaadownloader/actions/workflows/release.yml)
+[![Downloads](https://img.shields.io/github/downloads/marcpinet/nyaadownloader/total?style=for-the-badge&color=5b8cff)](https://github.com/marcpinet/nyaadownloader/releases)
+[![License](https://img.shields.io/github/license/marcpinet/nyaadownloader?style=for-the-badge&color=8b93a6)](LICENSE)
 
-📦 Exists as an all-in-one executable file, so you can skip the prerequisites 📦
+<br>
 
-🧾 ... and many more features! 🧾
+<a href="https://github.com/marcpinet/nyaadownloader/releases/latest">
+  <img src="https://img.shields.io/badge/Download%20for%20Windows-.exe-3566f0?style=for-the-badge&logo=windows&logoColor=white" alt="Download for Windows" height="42">
+</a>
 
-## Features
+<sub>Single file · No installation · No Python required</sub>
 
-* Integrated Graphical User Interface (GUI) 🖥
-* Enter uploaders name (defaults are [Erai-raws](https://www.erai-raws.info/) and [Subsplease](https://subsplease.org/)) 🤖
-* Enter the anime title you want to download ✏️
-* Choose the quality 🎞
-* Retrieve them either as .torrent or directly transfer them into your Bittorrent client ⚙️
-* Logging system (you can save them into a text file) 📝
-* Downloaded anime are sorted and stored into their respective folders 📁
-* Get warned whether the anime title you entered exists in Nyaa database or not ⚠️
+</div>
 
-## Demo
+<br>
 
-https://user-images.githubusercontent.com/52708150/131512813-20f10705-0d71-4a09-9c3d-1af3983a666b.mp4
+https://github.com/user-attachments/assets/69916a68-4f74-48db-a406-178ebe88d553
 
-## Getting Started
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: light)" srcset="docs/screenshots/results-light.png">
+    <img src="docs/screenshots/results-dark.png" alt="NyaaDownloader showing every episode of a season, ready to download" width="900">
+  </picture>
+</p>
 
-This script is being controlled through a user interface. 
-For beginners, that is why the main is a `.pyw` rather than a `.py` one.
+## ✨ Why you'll like it
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+<table>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>🔎 Type the title you know</h3>
+      “My Hero Academia” is searched as <i>Boku no Hero Academia</i>, the name uploaders actually use.
+      Suggestions come from <a href="https://anilist.co">AniList</a>, and even a plain “Frieren” finds the right show.
+    </td>
+    <td width="33%" valign="top">
+      <h3>⚡ Ridiculously fast</h3>
+      All result pages are fetched in parallel: a full season shows up in about a second.
+      Long shows like One Piece get past Nyaa's 1000-result limit automatically.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🎯 The right release, every time</h3>
+      Each episode gets the best release based on your favourite uploaders, trust, v2 fixes and seeders.
+      Dead torrents are skipped. Don't like the pick? Expand the episode and choose another.
+    </td>
+  </tr>
+  <tr>
+    <td width="33%" valign="top">
+      <h3>📺 Seasons that make sense</h3>
+      “5th Season”, “S2”, “Final Season”, absolute numbering… Releases are grouped by season,
+      missing episodes are flagged and batches get their own tab.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🧲 Your files, your way</h3>
+      Save the <code>.torrent</code> files (one tidy folder per anime), send the magnets straight to
+      your torrent client, or copy them to the clipboard.
+    </td>
+    <td width="33%" valign="top">
+      <h3>🌗 Easy on the eyes</h3>
+      Light and dark themes that follow Windows, with a one-click switch.
+      Keyboard shortcuts, activity log and a notification when a long job is done.
+    </td>
+  </tr>
+</table>
 
-### Support 👨‍💻
+## 🚀 Getting started
 
-Any problems with running the script and any questions please create a new issue [here](https://github.com/marcpinet/nyaadownloader/issues/new?assignees=&labels=&template=bug_report.md&title=).
+1. **Download** `NyaaDownloader-<version>.exe` from the [latest release](https://github.com/marcpinet/nyaadownloader/releases/latest) and run it.
+2. **Search** for an anime. Pick an AniList suggestion or just press <kbd>Enter</kbd>.
+3. **Choose** your uploaders, quality and episodes. Everything found is ticked: untick what you don't want.
+4. **Grab** them with **Download .torrent**, **Open magnets** or **Copy magnets**.
 
-You can also contribute to this project by requesting new features [here](https://github.com/marcpinet/nyaadownloader/issues/new?assignees=&labels=&template=feature_request.md&title=).
+<p align="center">
+  <img src="docs/screenshots/uploaders.png" alt="Picking uploaders from a searchable list" width="760">
+</p>
 
-I never ask for money for my open source projects. However, you can still tip me if you want.
-I am a [Brave Verified Creator](https://i.imgur.com/fOUfdM5.png)!
+> [!TIP]
+> Uploaders are tried in order: the one numbered **1** wins when several have the same episode.
+> Right-click a chip to reorder it, or remove them all to search everyone.
 
-### How to use without Python installed
+### ⌨️ Shortcuts
 
-I made an executable file of this project using [pyinstaller](https://github.com/pyinstaller/pyinstaller).
-You can find the latest release [here](https://github.com/marcpinet/nyaadownloader/releases/latest).
+| Keys | Action |
+| :-- | :-- |
+| <kbd>Ctrl</kbd> + <kbd>F</kbd> | Focus the search field |
+| <kbd>Enter</kbd> / <kbd>Esc</kbd> | Start / stop the search |
+| <kbd>Space</kbd> | Tick or untick the selected episodes |
+| <kbd>Ctrl</kbd> + <kbd>S</kbd> | Download the selected `.torrent` files |
+| <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>C</kbd> | Copy the selected magnet links |
+| <kbd>Ctrl</kbd> + <kbd>T</kbd> | Switch between light and dark theme |
+| <kbd>Ctrl</kbd> + <kbd>,</kbd> | Settings |
 
-### Prerequisites
+## ❓ FAQ
 
-* Python 3.9+ (3.0+ might work)
+<details>
+<summary><b>Windows says “Windows protected your PC” when I open the .exe</b></summary>
+<br>
+The executable isn't code-signed (certificates are expensive for a free project), so SmartScreen
+warns about it the first time. Click <b>More info</b> then <b>Run anyway</b>. Every release is built
+in the open by <a href="https://github.com/marcpinet/nyaadownloader/actions/workflows/release.yml">GitHub Actions</a>
+from the code in this repository, and comes with a <code>SHA256SUMS.txt</code> file.
+</details>
 
-#### Before we get started
+<details>
+<summary><b>Some episodes are marked “Not found on Nyaa”</b></summary>
+<br>
+None of the selected uploaders posted them in that quality. Try another quality, add uploaders,
+or remove them all to search everyone. You can also enable <i>Loose title matching</i> in the
+<b>⋯</b> menu for shows with unusual names.
+</details>
 
-You will need to have a web browser that supports magnet link and also a bittorrent client.
+<details>
+<summary><b>Nyaa is blocked where I live</b></summary>
+<br>
+Open <b>Settings</b> and set <i>Nyaa address</i> to a mirror you can reach.
+</details>
 
-Get a copy of the Project. Assuming you have git installed, open your Terminal and enter:
+<details>
+<summary><b>Where are my files and settings?</b></summary>
+<br>
+<code>.torrent</code> files go to <code>Downloads\NyaaDownloader\&lt;anime&gt;</code> by default (change it in Settings,
+or right-click the folder link at the bottom of the window). Settings live in
+<code>%APPDATA%\NyaaDownloader\settings.json</code> and logs in <code>%LOCALAPPDATA%\NyaaDownloader\Logs</code>.
+</details>
+
+## 🛠️ Running from source
+
+Requires Python 3.11 or newer.
 
 ```bash
-git clone 'https://github.com/marcpinet/nyaadownloader.git'
+git clone https://github.com/marcpinet/nyaadownloader.git
+cd nyaadownloader
+pip install -e ".[dev]"
+python -m nyaadownloader
 ```
 
-To install all needed requirements run the following command in the project directory:
+| Task | Command |
+| :-- | :-- |
+| Run the tests | `pytest` |
+| Lint | `ruff check .` |
+| Build `dist/NyaaDownloader.exe` | `pyinstaller NyaaDownloader.spec` |
 
-```bash
-pip install -r requirements.txt
+Every push to `main` is tested, built and published as a new release by
+[GitHub Actions](.github/workflows/release.yml).
+
+<details>
+<summary><b>Project layout</b></summary>
+
+```
+nyaadownloader/
+├── core/      Qt-free logic: Nyaa & AniList clients, title parsing, matching, settings
+├── ui/        PySide6 interface
+└── app.py     entry point
+tests/         pytest suite, core logic and UI
 ```
 
-## Running 🏃
+Built with [PySide6](https://doc.qt.io/qtforpython-6/), [httpx](https://www.python-httpx.org/),
+[PTT](https://github.com/dreulavelle/PTT) and [RapidFuzz](https://github.com/rapidfuzz/RapidFuzz).
+</details>
 
-To run this script open your Terminal in the project directory.
+## 💬 Support
 
-To start the script, enter:
+Found a bug or have an idea? [Open an issue](https://github.com/marcpinet/nyaadownloader/issues/new/choose).
+If NyaaDownloader saves you time, a ⭐ on the repo is always appreciated!
 
-```bash
-pythonw main.pyw
-```
+## 📄 License
 
-You can then close the Terminal.
+[MIT](LICENSE) © Marc Pinet
 
-## Tips and tricks
-
-Don't forget to separate your uploaders with a ; (semicolon) if you want to download from multiple uploaders. Else, leave empty. If you leave empty, I also recommend you to enable untrusted uploaders to maximize results.
-
-If you failed many times checking for an anime you like, you can try to find his full translated name from [MyAnimeList](https://myanimelist.net) as shown below.
-
-https://user-images.githubusercontent.com/52708150/230735983-0f5f0d1b-fd01-42c4-9934-3700ce6abe23.mp4
-
-If you still didn't find what you were looking for, you can try to search some "keywords" of its title and find how uploaders you like name their uploads.
-
-As an example, you might know *[JoJo's Bizarre Adventure: Golden Wind](https://myanimelist.net/anime/37991/JoJo_no_Kimyou_na_Bouken_Part_5__Ougon_no_Kaze?q=jojo&cat=anime)*, but its japanese title is *JoJo no Kimyou na Bouken Part 5: Ougon no Kaze*.
-
-However, they don't always name them like that. For instance, it can be named *JoJo no Kimyou na Bouken - Ougon no Kaze* (without the "**Part 5:**" which can influence the search), so you'll need to check by yourself if the above trick failed.
-
-## Authors
-
-* **Marc Pinet** - *Initial work* - [marcpinet](https://github.com/marcpinet)
-
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details
-
-## Acknowledgments
-
-* Hat tip to anyone whose code was used
-
-## To Do List 📝
-
-You can find what I plan to do for the project [here](https://github.com/marcpinet/nyaadownloader/projects).
-Also, you can find what I already implemented [here](https://github.com/marcpinet/nyaadownloader/projects?query=is%3Aclosed).
-
-
-
+<sub>NyaaDownloader doesn't host or distribute any content: it only helps you search Nyaa. Make sure
+you respect the laws of your country.</sub>
