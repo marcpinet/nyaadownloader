@@ -52,9 +52,18 @@ jobs:
         id: version
         shell: bash
         run: |
-          version=$(python -c "import nyaadownloader; print(nyaadownloader.__version__)")
+          # __version__ is the base version. Once it is released, every later push to main
+          # ships its next patch (3.0.0 -> 3.0.1 -> ...) until __version__ is bumped by hand.
+          base=$(python -c "import nyaadownloader; print(nyaadownloader.__version__)")
+          version=$base
+          if git rev-parse -q --verify "refs/tags/$base" > /dev/null; then
+            line=${base%.*}
+            last=$(git tag -l "$line.*" | grep -E "^$line\.[0-9]+$" | sort -V | tail -n 1)
+            version="$line.$(( ${last##*.} + 1 ))"
+          fi
+          sed -i -E "s/^__version__ = \".*\"/__version__ = \"$version\"/" nyaadownloader/__init__.py
           echo "version=$version" >> "$GITHUB_OUTPUT"
-          echo "tag=v$version-build.${{ github.run_number }}" >> "$GITHUB_OUTPUT"
+          echo "Releasing $version"
 
       - name: Build the executable
         run: pyinstaller --noconfirm NyaaDownloader.spec
@@ -76,7 +85,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: NyaaDownloader-${{ steps.version.outputs.tag }}
+          name: NyaaDownloader-${{ steps.version.outputs.version }}
           path: dist/*
 
       - name: Publish the release
@@ -84,8 +93,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${{ steps.version.outputs.tag }}" dist/NyaaDownloader-*.exe dist/SHA256SUMS.txt \
+          gh release create "${{ steps.version.outputs.version }}" dist/NyaaDownloader-*.exe dist/SHA256SUMS.txt \
             --target "${{ github.sha }}" \
-            --title "NyaaDownloader ${{ steps.version.outputs.version }} (build ${{ github.run_number }})" \
+            --title "NyaaDownloader ${{ steps.version.outputs.version }}" \
             --generate-notes \
             --latest
